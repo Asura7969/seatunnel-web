@@ -5,7 +5,7 @@
         <n-button 
           ghost 
           color="#8a2be2" style="margin: auto;"
-          @click="activate()"
+          @click="activate(true)"
         >
           <template #icon>
             <n-icon>
@@ -16,7 +16,7 @@
         </n-button>
       </n-button-group>
       <!-- 新增数据源 -->
-      <AddDatasource :active='active'/>
+      <AddDatasource :active="active" @show="activate"/>
     </n-space>
     <n-data-table
       :columns="columns"
@@ -62,7 +62,7 @@ const createColumns = ({
       title: "地址",
       key: "address",
       resizable: true,
-      width: 800,
+      width: 600,
       maxWidth: 1000,
     },
     {
@@ -113,9 +113,8 @@ export default defineComponent({
   setup() {
     const message = useMessage();
     const active = ref(false)
-    const activate = () => {
-      active.value = true;
-      console.log(active.value);
+    const activate = (show) => {
+      active.value = show;
     };
     return {
       data,
