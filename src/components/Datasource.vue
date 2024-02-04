@@ -1,14 +1,22 @@
 <template>
   <n-space vertical :size="12">
     <n-space justify="end">
-      <n-button ghost color="#8a2be2" style="margin: auto;">
-        <template #icon>
+      <n-button-group>
+        <n-button 
+          ghost 
+          color="#8a2be2" style="margin: auto;"
+          @click="activate()"
+        >
+          <template #icon>
             <n-icon>
-              <AppstoreAddOutlined />
+              <AppstoreAddOutlined/>
             </n-icon>
           </template>
-          新增
-      </n-button>
+            新增
+        </n-button>
+      </n-button-group>
+      <!-- 新增数据源 -->
+      <AddDatasource :active='active'/>
     </n-space>
     <n-data-table
       :columns="columns"
@@ -24,6 +32,7 @@
 
 <script>
 import { h, defineComponent } from "vue";
+import AddDatasource  from "./AddDatasource.vue"
 import { AppstoreAddOutlined } from "@vicons/antd";
 
 function tagType(row) {
@@ -98,10 +107,16 @@ const data = [
 
 export default defineComponent({
   components: {
-    AppstoreAddOutlined
+    AppstoreAddOutlined,
+    AddDatasource
   },
   setup() {
     const message = useMessage();
+    const active = ref(false)
+    const activate = () => {
+      active.value = true;
+      console.log(active.value);
+    };
     return {
       data,
       columns: createColumns({
@@ -110,6 +125,8 @@ export default defineComponent({
         }
       }),
       pagination: false,
+      activate,
+      active
     };
   }
 });
