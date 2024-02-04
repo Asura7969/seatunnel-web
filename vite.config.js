@@ -21,7 +21,10 @@ export default defineConfig({
             'NButton',
             'NTag'
           ]
-        }
+        },
+        // {
+        //   '@vicons/ionicons5': ['CashOutline']
+        // }
       ]
     }),
     Components({

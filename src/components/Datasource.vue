@@ -1,14 +1,30 @@
 <template>
-  <n-data-table
-    :columns="columns"
-    :data="data"
-    :pagination="pagination"
-    :bordered="false"
-  />
+  <n-space vertical :size="12">
+    <n-space justify="end">
+      <n-button ghost color="#8a2be2" style="margin: auto;">
+        <template #icon>
+            <n-icon>
+              <AppstoreAddOutlined />
+            </n-icon>
+          </template>
+          新增
+      </n-button>
+    </n-space>
+    <n-data-table
+      :columns="columns"
+      :data="data"
+      :pagination="pagination"
+      :bordered="true"
+      :max-height="250"
+      size="small"
+    />
+
+  </n-space>
 </template>
 
 <script>
 import { h, defineComponent } from "vue";
+import { AppstoreAddOutlined } from "@vicons/antd";
 
 function tagType(row) {
   if (row.type == 'mysql') {
@@ -30,7 +46,15 @@ const createColumns = ({
     },
     {
       title: "名称",
-      key: "title"
+      key: "title",
+      resizable: true,
+    },
+    {
+      title: "地址",
+      key: "address",
+      resizable: true,
+      width: 800,
+      maxWidth: 1000,
     },
     {
       title: "类型",
@@ -67,12 +91,15 @@ const createColumns = ({
 };
 
 const data = [
-  { no: 1, title: "sim", type: "mysql" },
-  { no: 2, title: "数仓", type: "doris" },
-  { no: 3, title: "mes", type: "postgres" }
+  { no: 1, title: "sim", address: "127.0.0.1:3306", type: "mysql" },
+  { no: 2, title: "数仓", address: "127.0.0.1:15433", type: "doris" },
+  { no: 3, title: "mes", address: "127.0.0.1:8030", type: "postgres" }
 ];
 
 export default defineComponent({
+  components: {
+    AppstoreAddOutlined
+  },
   setup() {
     const message = useMessage();
     return {
@@ -82,7 +109,7 @@ export default defineComponent({
           message.info(`Play ${row.title}`);
         }
       }),
-      pagination: false
+      pagination: false,
     };
   }
 });
