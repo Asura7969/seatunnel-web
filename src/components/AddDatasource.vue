@@ -30,9 +30,12 @@
                 <n-form-item label="Passwd: " path="pdValue">
                     <n-input v-model:value="model.pdValue" placeholder="密码" />
                 </n-form-item>
+                <n-form-item label="Database: " path="dbValue">
+                    <n-input v-model:value="model.dbValue" placeholder="数据库" />
+                </n-form-item>
             </n-form>
             <n-flex justify="end">
-                <n-button color="#2080f0">
+                <n-button color="#2080f0" @click="submit">
                     <template #icon>
                         <n-icon>
                         <AddSquare24Regular />
@@ -40,7 +43,7 @@
                     </template>
                     新增
                 </n-button>
-                <n-button color="#abb4bf">
+                <n-button color="#abb4bf" @click="maskClick">
                     <template #icon>
                         <n-icon>
                         <CancelOutlined />
@@ -111,10 +114,16 @@ export default defineComponent({
         const maskClick = (e) => {
             emit("show", false);
         };
+        const submit = () => {
+            // TODO: 新增接口
+            console.log("submit");
+            maskClick();
+        };
         return {
             active,
             placement,
             maskClick,
+            submit,
             generalOptions,
             rules:{},
             formRef,
@@ -123,6 +132,7 @@ export default defineComponent({
                 hostValue: null,
                 userValue: null,
                 pdValue: null,
+                dbValue: null,
             }),
             size: ref("small"),
             renderLabel: (option) => {
