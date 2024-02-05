@@ -16,7 +16,7 @@
         </n-button>
       </n-button-group>
       <!-- 新增数据源 -->
-      <AddDatasource :active="active" @show="activate"/>
+      <AddDatasource ref="addSource" @show="activate"/>
     </n-space>
     <n-data-table
       :columns="columns"
@@ -40,6 +40,8 @@ function tagType(row) {
     return "warning"
   } else if (row.type == 'doris') {
     return "success"
+  } else if (row.type == 'starrocks') {
+    return undefined
   } else {
     return "info"
   };
@@ -102,7 +104,8 @@ const createColumns = ({
 const data = [
   { no: 1, title: "sim", address: "127.0.0.1:3306", type: "mysql" },
   { no: 2, title: "数仓", address: "127.0.0.1:15433", type: "doris" },
-  { no: 3, title: "mes", address: "127.0.0.1:8030", type: "postgres" }
+  { no: 3, title: "mes", address: "127.0.0.1:8030", type: "postgres" },
+  { no: 4, title: "数仓", address: "127.0.0.1:8031", type: "starrocks" }
 ];
 
 export default defineComponent({
@@ -112,10 +115,11 @@ export default defineComponent({
   },
   setup() {
     const message = useMessage();
-    const active = ref(false)
+    const addSource = ref(false)
     const activate = (show) => {
-      active.value = show;
-    };
+        const { active } = addSource.value
+        addSource.value.active = show;
+		}
     return {
       data,
       columns: createColumns({
@@ -125,7 +129,7 @@ export default defineComponent({
       }),
       pagination: false,
       activate,
-      active
+      addSource
     };
   }
 });
