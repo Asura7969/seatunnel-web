@@ -7,8 +7,8 @@
             bordered
             style="width: 100%; height: 65px"
           >
-            <n-grid x-gap="16" :cols="8">
-              <n-grid-item :offset="0" style="align-items: center; display: flex;">
+            <n-grid x-gap="12" :cols="6">
+              <n-grid-item :offset="0" style="align-items: center; display: flex; height: 65px">
                 <n-flex>
                   <n-image
                     height="60"
@@ -22,7 +22,7 @@
                   </n-gradient-text>
                 </n-flex>
               </n-grid-item>
-              <n-grid-item :offset="6" style="align-items: center; display: flex;">
+              <n-grid-item :offset="4" style="align-items: center; display: flex;">
                 <n-flex justify="end">
                   <n-button :bordered="false" :render-icon="themeIcon" @click="clickTheme" style="margin-left: 100px;">
                     主题
