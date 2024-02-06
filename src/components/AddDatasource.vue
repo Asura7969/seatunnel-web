@@ -1,5 +1,10 @@
 <template>
-    <n-drawer v-model:show="active" :width="502" :placement="placement" :on-mask-click="maskClick">
+    <n-drawer 
+      v-model:show="active" 
+      :width="502" 
+      :placement="placement" 
+      :on-mask-click="maskClick"
+      :on-update="update">
         <n-drawer-content title="斯通纳">
             <n-form
                 ref="formRef"
@@ -119,6 +124,9 @@ export default defineComponent({
             console.log("submit");
             maskClick();
         };
+        const update = (s) => {
+            console.log("show: " + s)
+        };
         return {
             active,
             placement,
@@ -141,6 +149,7 @@ export default defineComponent({
                 option.label
                 ];
             },
+            update,
         };
     }
 });

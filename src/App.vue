@@ -25,6 +25,7 @@
               <n-grid-item :offset="6" style="align-items: center; display: flex;">
                 <n-flex justify="end">
                   <n-button :bordered="false" :render-icon="themeIcon" @click="clickTheme" style="margin-left: 100px;">
+                    主题
                   </n-button>
                 </n-flex>
               </n-grid-item>
@@ -92,7 +93,6 @@ const menuOptions = routes.map((c) => {
       {
         to: {
           name: c.name,
-          state: { c }
         }
       },
       { default: () => c.name }
@@ -112,25 +112,32 @@ export default defineComponent({
     const theme = ref(null);
     const expandedKeys = [];
 
+    const isDarkTheme = () => {
+      return theme.value !== null && theme.value.name === 'dark';
+    };
+
+    const themeIcon = () => {
+      let v_node = isDarkTheme() ? Sun : WeatherMoon20Filled;
+      return h(NIcon, null, {
+        default: () => h(v_node)
+      });
+    };
+
     const clickTheme = () => {
-      if (theme.value !== null && theme.value.name === 'dark') {
+      if (isDarkTheme()) {
         theme.value = null;
       } else {
         theme.value = darkTheme;
       }
-      // themeIcon(Sun)
     };
+
     return {
       collapsed: ref(false),
       route: useRoute(),
       menuOptions,
       containerRef,
       theme,
-      themeIcon() {
-        return h(NIcon, null, {
-          default: () => h(WeatherMoon20Filled)
-        });
-      },
+      themeIcon,
       clickTheme
     };
   },
