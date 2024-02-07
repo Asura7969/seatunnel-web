@@ -1,15 +1,21 @@
 <template>
   <n-config-provider :theme="theme" :theme-overrides="{ common: { fontWeightStrong: '450' } }">
-    <n-space vertical size="large" style="width: 100%; height: 100%" item-style="width: 100%; height: 100%">
-      <n-layout position="absolute" style="width: 100%; height: 100%">
-        <n-layout-header 
+    <n-layout position="absolute" has-sider>
+      <n-layout-sider
+            :width="220"
+            collapse-mode="width"
+            :collapsed-width="60"
+            show-trigger="arrow-circle"
             bordered
-            style="width: 100%; height: 65px"
+            @collapse="collapsed = true"
+            @expand="collapsed = false"
+            :collapsed="collapsed"
+            :native-scrollbar="false"
           >
-          <n-space :size="20" align="center" style="line-height: 1">
+          <n-a class="logo">
             <n-image
-              height="60"
-              width="60"
+              width="40"
+              height="40"
                 src="	https://seatunnel.apache.org/image/logo.png"
               />
             <n-gradient-text
@@ -17,6 +23,29 @@
             >
               <h3>Seathnnel</h3>
             </n-gradient-text>
+          </n-a>
+
+            <n-menu
+              value=""
+              :collapsed="collapsed"
+              :collapsed-width="60"
+              :collapsed-icon-size="22"
+              :options="menuOptions"
+              :inverted="false"
+              key-field="key"
+              label-field="label"
+              children-field="children"
+            />
+          </n-layout-sider>
+    <n-layout style="width: 100%;">
+      <!-- <Header /> -->
+      <n-layout position="absolute" style="width: 100%;">
+        <n-layout-header 
+            bordered
+            style="height: 65px"
+          >
+          <n-space :size="20" align="center" style="line-height: 1">
+            
 
             <n-popover trigger="hover">
               <template #trigger>
@@ -37,38 +66,27 @@
           </n-space>
           </n-layout-header>
         
-        <n-layout has-sider style="width: 100%; height: calc(100vh - 65px)">
-          <n-layout-sider
-            collapse-mode="width"
-            :collapsed-width="60"
-            show-trigger="arrow-circle"
-            content-style="padding: 0px;"
-            bordered
-            @collapse="collapsed = true"
-            @expand="collapsed = false"
-            :collapsed="collapsed"
-            :native-scrollbar="false"
-          >
-            <n-menu
-              value=""
-              :collapsed="collapsed"
-              :collapsed-width="60"
-              :collapsed-icon-size="22"
-              :options="menuOptions"
-              :inverted="false"
-              key-field="key"
-              label-field="label"
-              children-field="children"
-            />
-          </n-layout-sider>
-          <n-layout-content content-style="padding: 24px;" :native-scrollbar="false">
+
+      </n-layout>
+
+
+
+      <!-- <Content /> -->
+
+          
+        <n-layout-content content-style="padding: 80px 40px;">
             <n-message-provider>
               <router-view></router-view>
             </n-message-provider>
           </n-layout-content>
-        </n-layout>
-      </n-layout>
-    </n-space>
+
+      <!-- <Footer /> -->
+    </n-layout>
+  </n-layout>
+
+
+
+      
   </n-config-provider>
  </template>
 
@@ -163,6 +181,21 @@ export default defineComponent({
 
 
 <style scoped lang="scss">
+.logo {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  padding: 12px 20px;
+  background: var(--n-color);
+  text-decoration: none;
+}
+
+
+.logo {
+  padding: 9px;
+}
+
 .n-layout-header {
   position: sticky;
   top: 0;
@@ -176,19 +209,10 @@ export default defineComponent({
   margin-left: auto;
 }
 
-.n-image {
-  padding-left: 20px;
-}
-
 .n-layout-sider {
   ::v-deep(.n-layout-toggle-button){
     top: 10%
   }
 }
 
-.n-icon {
-  top: 50%;
-  align-items: center;
-  display: flex;
-}
 </style>

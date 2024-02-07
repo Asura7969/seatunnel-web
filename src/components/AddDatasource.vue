@@ -1,5 +1,6 @@
 <template>
     <n-drawer 
+      content-style="padding: 20px 20px;"
       v-model:show="active" 
       :width="502" 
       :placement="placement" 
