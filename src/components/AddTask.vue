@@ -25,78 +25,132 @@
                     maxHeight: '600px',
                 }"
             >
-                <n-collapse :default-expanded-names="['1', '3']" style="height: 600px">
+                <n-timeline size="large" :icon-size="20">
+                    <n-collapse :default-expanded-names="['1', '3']" style="height: 600px">
                     <template #header-extra>
                     </template>
                     <template #arrow>
-                        <n-icon>
+                        <!-- <n-icon>
                             <AddSquare20Filled />
-                        </n-icon>
+                        </n-icon> -->
                     </template>
+                    
+                    <n-timeline-item
+                        type="error"
+                        title=""
+                        content=""
+                        time=""
+                    >
+                        <template #icon>
+                            <n-icon>
+                            <GroupResource />
+                            </n-icon>
+                        </template>
                     <n-collapse-item title="Source" name="1">
                     
-                        <n-form-item label="model: " path="inputValue">
-                            <n-switch :rail-style="railStyle" :round="false">
-                                <template #checked>
-                                    batch
-                                </template>
-                                <template #unchecked>
-                                    stream
-                                </template>
-                            </n-switch>
-                        </n-form-item>
-                        <n-form-item label="Input: " path="sourceValue">
-                            <n-select
-                                v-model:value="model.sourceValue"
-                                placeholder="选择Source"
-                                :render-label="renderLabel"
-                                :options="generalOptions"
-                            />
-                        </n-form-item>
-                        <n-form-item label="Config: " path="sourceConfig">
-                            <n-input
-                                v-model:value="model.sourceConfig"
-                                type="textarea"
-                                placeholder="source config"
-                                :autosize="{
-                                    minRows: 5
-                                }"
-                            />
-                        </n-form-item>
-                    </n-collapse-item>
-                    <n-collapse-item title="Transform" name="2">
-                        <n-form-item label="Transform: " path="transformValue">
-                            <n-input
-                                v-model:value="model.transformValue"
-                                type="textarea"
-                                placeholder="transform logic"
-                                :autosize="{
-                                    minRows: 5
-                                }"
-                            />
-                        </n-form-item>
-                    </n-collapse-item>
-                    <n-collapse-item title="Sink" name="3">
-                        <n-form-item label="Output: " path="sinkValue">
-                            <n-select
-                                v-model:value="model.sinkValue"
-                                placeholder="选择Sink"
-                                :render-label="renderLabel"
-                                :options="generalOptions"
-                            />
-                        </n-form-item>
-                        <n-form-item label="Config: " path="sinkConfig">
-                            <n-input
-                                v-model:value="model.sinkConfig"
-                                type="textarea"
-                                placeholder="sink config"
-                                :autosize="{
-                                    minRows: 5
-                                }"
-                            />
-                        </n-form-item>
-                    </n-collapse-item>
-                </n-collapse>
+                    <n-form-item label="model: " path="inputValue">
+                        <n-switch :rail-style="railStyle" :round="false">
+                            <template #checked>
+                                batch
+                            </template>
+                            <template #unchecked>
+                                stream
+                            </template>
+                        </n-switch>
+                    </n-form-item>
+                    <n-form-item label="input: " path="sourceValue">
+                        <n-select
+                            v-model:value="model.sourceValue"
+                            placeholder="选择Source"
+                            :render-label="renderLabel"
+                            :options="generalOptions"
+                        />
+                    </n-form-item>
+                    <n-form-item label="config: " path="sourceConfig">
+                        <n-input
+                            v-model:value="model.sourceConfig"
+                            type="textarea"
+                            placeholder="source config"
+                            :autosize="{
+                                minRows: 5
+                            }"
+                        />
+                    </n-form-item>
+                </n-collapse-item>
+                    </n-timeline-item>
+
+
+
+                    <n-timeline-item
+                        type="warning"
+                        title=""
+                        content=""
+                        time=""
+                    >
+                    <template #icon>
+                            <n-icon>
+                            <ApartmentOutlined />
+                            </n-icon>
+                        </template>
+                        <n-collapse-item title="Transform" name="2">
+                            <n-form-item label="logic: " path="transformValue">
+                                <n-input
+                                    v-model:value="model.transformValue"
+                                    type="textarea"
+                                    placeholder="transform logic"
+                                    :autosize="{
+                                        minRows: 5
+                                    }"
+                                />
+                            </n-form-item>
+                        </n-collapse-item>
+                
+                    </n-timeline-item>
+
+
+                    <n-timeline-item
+                        type="success"
+                        title=""
+                        content=""
+                        time=""
+                        >
+                        <template #icon>
+                            <n-icon>
+                            <InputRound />
+                            </n-icon>
+                        </template>
+                        <n-collapse-item title="Sink" name="3">
+                            <n-form-item label="output: " path="sinkValue">
+                                <n-select
+                                    v-model:value="model.sinkValue"
+                                    placeholder="选择Sink"
+                                    :render-label="renderLabel"
+                                    :options="generalOptions"
+                                />
+                            </n-form-item>
+                            <n-form-item label="config: " path="sinkConfig">
+                                <n-input
+                                    v-model:value="model.sinkConfig"
+                                    type="textarea"
+                                    placeholder="sink config"
+                                    :autosize="{
+                                        minRows: 5
+                                    }"
+                                />
+                            </n-form-item>
+                        </n-collapse-item>
+                    </n-timeline-item>
+
+                    </n-collapse>
+
+
+
+
+
+
+                    
+                </n-timeline>
+
 
             </n-form>
         </n-scrollbar>
@@ -128,11 +182,13 @@
 <script>
 import { defineComponent } from 'vue'
 import { AddSquare24Regular, AddSquare20Filled } from "@vicons/fluent";
-import { CancelOutlined } from "@vicons/material";
+import { CancelOutlined, InputRound } from "@vicons/material";
+import { ApartmentOutlined } from "@vicons/antd";
 import DorisIcon from '../assets/doris.svg';
 import MysqlIcon from '../assets/mysql.svg';
 import PostgresqlIcon from '../assets/postgresql.svg';
 import StarrocksIcon from '../assets/starrocks.svg';
+import { GroupResource } from "@vicons/carbon";
 
 const renderIcon = (icon) => {
     return h(NIcon,{
@@ -176,6 +232,9 @@ export default defineComponent({
         PostgresqlIcon,
         StarrocksIcon,
         AddSquare20Filled,
+        GroupResource,
+        ApartmentOutlined,
+        InputRound,
     },
     setup (props, {emit}) {
         const formRef = ref(null);
@@ -241,5 +300,12 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+:deep(.n-timeline .n-timeline-item:last-child .n-timeline-item-timeline .n-timeline-item-timeline__line) {
+    display: inline;
+}
+
+:deep(.n-collapse-item__header .n-collapse-item__header-main .n-collapse-item-arrow) {
+    display: none;
+}
 </style>

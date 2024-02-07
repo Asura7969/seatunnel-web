@@ -109,7 +109,7 @@ export default defineComponent({
   },
   setup() {
     const containerRef = ref(void 0);
-    const theme = ref(null);
+    const theme = ref(darkTheme);
     const expandedKeys = [];
 
     const isDarkTheme = () => {
