@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="theme">
+  <n-config-provider :theme="theme" :theme-overrides="{ common: { fontWeightStrong: '450' } }">
     <n-space vertical size="large" style="width: 100%; height: 100%" item-style="width: 100%; height: 100%">
       <n-layout position="absolute" style="width: 100%; height: 100%">
         <n-layout-header 
@@ -151,8 +151,14 @@ export default defineComponent({
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
 .n-image {
   padding-left: 20px;
+}
+
+.n-layout-sider {
+  ::v-deep(.n-layout-toggle-button){
+    top: 10%
+  }
 }
 </style>

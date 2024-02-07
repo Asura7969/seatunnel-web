@@ -12,7 +12,7 @@
               <AppstoreAddOutlined/>
             </n-icon>
           </template>
-            新建
+          新增
         </n-button>
       </n-button-group>
     </n-space>

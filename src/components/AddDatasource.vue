@@ -5,7 +5,7 @@
       :placement="placement" 
       :on-mask-click="maskClick"
       :on-update="update">
-        <n-drawer-content title="斯通纳">
+        <n-drawer-content title="数据源">
             <n-form
                 ref="formRef"
                 :model="model"

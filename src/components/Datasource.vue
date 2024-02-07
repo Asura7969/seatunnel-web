@@ -15,8 +15,6 @@
             新增
         </n-button>
       </n-button-group>
-      <!-- 新增数据源 -->
-      <AddDatasource ref="addSource" @show="activate"/>
     </n-space>
     <n-data-table
       :columns="columns"
@@ -28,6 +26,8 @@
     />
 
   </n-space>
+  <!-- 新增数据源 -->
+  <AddDatasource ref="addSource" @show="activate"/>
 </template>
 
 <script>
@@ -103,9 +103,9 @@ const createColumns = ({
 
 const data = [
   { no: 1, title: "sim", address: "127.0.0.1:3306", type: "mysql" },
-  { no: 2, title: "数仓", address: "127.0.0.1:15433", type: "doris" },
+  { no: 2, title: "数仓Doris", address: "127.0.0.1:15433", type: "doris" },
   { no: 3, title: "mes", address: "127.0.0.1:8030", type: "postgres" },
-  { no: 4, title: "数仓", address: "127.0.0.1:8031", type: "starrocks" }
+  { no: 4, title: "数仓StarRocks", address: "127.0.0.1:8031", type: "starrocks" }
 ];
 
 export default defineComponent({
