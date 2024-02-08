@@ -12,9 +12,9 @@
         
         </template>
 
-        <n-tabs type="segment" animated style="height: 471px;" tab-class="tc">
+        <n-tabs type="segment" animated style="height: 470px;" tab-class="tc">
             <n-tab-pane name="template" tab="模板">
-                <n-scrollbar style="height: 440px">
+                <n-scrollbar style="height: 430px">
                     <n-form
                         ref="formRef"
                         :model="model"
@@ -306,7 +306,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 :deep(.n-timeline .n-timeline-item:last-child .n-timeline-item-timeline .n-timeline-item-timeline__line) {
     display: inline;
 }
@@ -315,8 +315,4 @@ export default defineComponent({
     display: none;
 }
 
-:deep(.tc .n-tabs-rail .n-tabs-capsule) {
-    height: 33px;
-    width: 281px;
-}
 </style>
