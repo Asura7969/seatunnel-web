@@ -11,7 +11,10 @@
         <template #header-extra>
         
         </template>
-        <n-scrollbar style="height: 470px">
+
+        <n-tabs type="segment" animated style="height: 471px;" tab-class="tc">
+            <n-tab-pane name="template" tab="模板">
+                    <n-scrollbar style="height: 470px">
             <n-form
                 ref="formRef"
                 :model="model"
@@ -143,17 +146,29 @@
 
                     </n-collapse>
 
-
-
-
-
-
-                    
                 </n-timeline>
 
 
             </n-form>
         </n-scrollbar>
+            </n-tab-pane>
+            <n-tab-pane name="constum" tab="自定义">
+                <n-input
+                                    v-model:value="model.jsonValue"
+                                    type="textarea"
+                                    placeholder="json"
+                                    :autosize="{
+                                        minRows: 18
+                                    }"
+                                />
+
+            </n-tab-pane>
+
+
+        </n-tabs>
+
+
+
 
 
         <template #footer>
@@ -277,7 +292,8 @@ export default defineComponent({
                 sinkValue: null,
                 sourceConfig: null,
                 transformValue: null,
-                sinkConfig: null
+                sinkConfig: null,
+                jsonValue: null,
             }),
             bodyStyle: {
                 width: "600px",
@@ -307,5 +323,10 @@ export default defineComponent({
 
 :deep(.n-collapse-item__header .n-collapse-item__header-main .n-collapse-item-arrow) {
     display: none;
+}
+
+:deep(.tc .n-tabs-rail .n-tabs-capsule) {
+    height: 33px;
+    width: 281px;
 }
 </style>
