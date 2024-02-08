@@ -14,162 +14,152 @@
 
         <n-tabs type="segment" animated style="height: 471px;" tab-class="tc">
             <n-tab-pane name="template" tab="模板">
-                    <n-scrollbar style="height: 470px">
-            <n-form
-                ref="formRef"
-                :model="model"
-                :rules="rules"
-                label-placement="left"
-                label-width="auto"
-                require-mark-placement="right-hanging"
-                size="small"
-                :style="{
-                    maxWidth: '540px',
-                    maxHeight: '600px',
-                }"
-            >
-                <n-timeline size="large" :icon-size="20">
-                    <n-collapse :default-expanded-names="['1', '3']" style="height: 600px">
-                    <template #header-extra>
-                    </template>
-                    <template #arrow>
-                        <!-- <n-icon>
-                            <AddSquare20Filled />
-                        </n-icon> -->
-                    </template>
-                    
-                    <n-timeline-item
-                        type="error"
-                        title=""
-                        content=""
-                        time=""
+                <n-scrollbar style="height: 440px">
+                    <n-form
+                        ref="formRef"
+                        :model="model"
+                        :rules="rules"
+                        label-placement="left"
+                        label-width="auto"
+                        require-mark-placement="right-hanging"
+                        size="small"
+                        :style="{
+                            maxWidth: '540px',
+                            maxHeight: '600px',
+                        }"
                     >
-                        <template #icon>
-                            <n-icon>
-                            <GroupResource />
-                            </n-icon>
-                        </template>
-                    <n-collapse-item title="Source" name="1">
-                    
-                    <n-form-item label="model: " path="inputValue">
-                        <n-switch :rail-style="railStyle" :round="false">
-                            <template #checked>
-                                batch
+                        <n-timeline size="large" :icon-size="20">
+                            <n-collapse :default-expanded-names="['1', '3']" style="height: 600px">
+                            <template #header-extra>
                             </template>
-                            <template #unchecked>
-                                stream
+                            <template #arrow>
+                                <!-- <n-icon>
+                                    <AddSquare20Filled />
+                                </n-icon> -->
                             </template>
-                        </n-switch>
-                    </n-form-item>
-                    <n-form-item label="input: " path="sourceValue">
-                        <n-select
-                            v-model:value="model.sourceValue"
-                            placeholder="选择Source"
-                            :render-label="renderLabel"
-                            :options="generalOptions"
-                        />
-                    </n-form-item>
-                    <n-form-item label="config: " path="sourceConfig">
-                        <n-input
-                            v-model:value="model.sourceConfig"
-                            type="textarea"
-                            placeholder="source config"
-                            :autosize="{
-                                minRows: 5
-                            }"
-                        />
-                    </n-form-item>
-                </n-collapse-item>
-                    </n-timeline-item>
-
-
-
-                    <n-timeline-item
-                        type="warning"
-                        title=""
-                        content=""
-                        time=""
-                    >
-                    <template #icon>
-                            <n-icon>
-                            <ApartmentOutlined />
-                            </n-icon>
-                        </template>
-                        <n-collapse-item title="Transform" name="2">
-                            <n-form-item label="logic: " path="transformValue">
-                                <n-input
-                                    v-model:value="model.transformValue"
-                                    type="textarea"
-                                    placeholder="transform logic"
-                                    :autosize="{
-                                        minRows: 5
-                                    }"
-                                />
+                            
+                            <n-timeline-item
+                                type="error"
+                                title=""
+                                content=""
+                                time=""
+                            >
+                                <template #icon>
+                                    <n-icon>
+                                    <GroupResource />
+                                    </n-icon>
+                                </template>
+                            <n-collapse-item title="Source" name="1">
+                            
+                            <n-form-item label="model: " path="inputValue">
+                                <n-switch :rail-style="railStyle" :round="false">
+                                    <template #checked>
+                                        batch
+                                    </template>
+                                    <template #unchecked>
+                                        stream
+                                    </template>
+                                </n-switch>
                             </n-form-item>
-                        </n-collapse-item>
-                
-                    </n-timeline-item>
-
-
-                    <n-timeline-item
-                        type="success"
-                        title=""
-                        content=""
-                        time=""
-                        >
-                        <template #icon>
-                            <n-icon>
-                            <InputRound />
-                            </n-icon>
-                        </template>
-                        <n-collapse-item title="Sink" name="3">
-                            <n-form-item label="output: " path="sinkValue">
+                            <n-form-item label="input: " path="sourceValue">
                                 <n-select
-                                    v-model:value="model.sinkValue"
-                                    placeholder="选择Sink"
+                                    v-model:value="model.sourceValue"
+                                    placeholder="选择Source"
                                     :render-label="renderLabel"
                                     :options="generalOptions"
                                 />
                             </n-form-item>
-                            <n-form-item label="config: " path="sinkConfig">
+                            <n-form-item label="config: " path="sourceConfig">
                                 <n-input
-                                    v-model:value="model.sinkConfig"
+                                    v-model:value="model.sourceConfig"
                                     type="textarea"
-                                    placeholder="sink config"
+                                    placeholder="source config"
                                     :autosize="{
                                         minRows: 5
                                     }"
                                 />
                             </n-form-item>
                         </n-collapse-item>
-                    </n-timeline-item>
+                            </n-timeline-item>
+                            <n-timeline-item
+                                type="warning"
+                                title=""
+                                content=""
+                                time=""
+                            >
+                            <template #icon>
+                                    <n-icon>
+                                    <ApartmentOutlined />
+                                    </n-icon>
+                                </template>
+                                <n-collapse-item title="Transform" name="2">
+                                    <n-form-item label="logic: " path="transformValue">
+                                        <n-input
+                                            v-model:value="model.transformValue"
+                                            type="textarea"
+                                            placeholder="transform logic"
+                                            :autosize="{
+                                                minRows: 5
+                                            }"
+                                        />
+                                    </n-form-item>
+                                </n-collapse-item>
+                        
+                            </n-timeline-item>
 
-                    </n-collapse>
 
-                </n-timeline>
+                            <n-timeline-item
+                                type="success"
+                                title=""
+                                content=""
+                                time=""
+                                >
+                                <template #icon>
+                                    <n-icon>
+                                    <InputRound />
+                                    </n-icon>
+                                </template>
+                                <n-collapse-item title="Sink" name="3">
+                                    <n-form-item label="output: " path="sinkValue">
+                                        <n-select
+                                            v-model:value="model.sinkValue"
+                                            placeholder="选择Sink"
+                                            :render-label="renderLabel"
+                                            :options="generalOptions"
+                                        />
+                                    </n-form-item>
+                                    <n-form-item label="config: " path="sinkConfig">
+                                        <n-input
+                                            v-model:value="model.sinkConfig"
+                                            type="textarea"
+                                            placeholder="sink config"
+                                            :autosize="{
+                                                minRows: 5
+                                            }"
+                                        />
+                                    </n-form-item>
+                                </n-collapse-item>
+                            </n-timeline-item>
+
+                            </n-collapse>
+
+                        </n-timeline>
 
 
-            </n-form>
-        </n-scrollbar>
+                    </n-form>
+                </n-scrollbar>
             </n-tab-pane>
             <n-tab-pane name="constum" tab="自定义">
                 <n-input
-                                    v-model:value="model.jsonValue"
-                                    type="textarea"
-                                    placeholder="json"
-                                    :autosize="{
-                                        minRows: 18
-                                    }"
-                                />
-
+                    v-model:value="model.jsonValue"
+                    type="textarea"
+                    placeholder="json"
+                    :autosize="{
+                        minRows: 18
+                    }"
+                />
             </n-tab-pane>
-
-
         </n-tabs>
-
-
-
-
 
         <template #footer>
             <n-flex justify="end">
