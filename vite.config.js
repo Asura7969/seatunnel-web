@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import svgLoader from 'vite-svg-loader'
+import {viteMockServe} from "vite-plugin-mock";
 
 export default defineConfig({
   plugins: [
@@ -13,6 +14,10 @@ export default defineConfig({
           isCustomElement: (tag) => [''].includes(tag),
         }
       }
+    }),
+    viteMockServe({
+      mockPath: "./src/mock",
+      localEnabled: true,
     }),
     svgLoader(),
     AutoImport({

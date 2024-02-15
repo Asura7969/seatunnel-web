@@ -34,7 +34,7 @@
 import { h, defineComponent } from "vue";
 import { AppstoreAddOutlined } from "@vicons/antd";
 import AddTask from "./AddTask.vue"
-
+import { runningJobs } from '../api/api'
 
 function tagType(row) {
   if (row.jobStatus == 'CANCELING' 
@@ -150,6 +150,9 @@ export default defineComponent({
         const { active } = addTask.value
         addTask.value.active = show;
 		}
+    runningJobs().then(res => {
+      console.log(res.data)
+    })
     return {
       data,
       columns: createColumns({

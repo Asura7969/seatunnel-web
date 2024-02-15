@@ -9,7 +9,7 @@
             <n-image
               height="60"
               width="60"
-              src="	https://seatunnel.apache.org/image/logo.png"
+              src="https://seatunnel.apache.org/image/logo.png"
             />
             <n-gradient-text
               gradient="linear-gradient(130deg,#24c6dc,#5433ff 41.07%,#f09 76.05%)"
@@ -73,14 +73,14 @@
 
 
 <script>
-import { defineComponent, h, ref, toRef } from "vue";
-import { darkTheme } from 'naive-ui'
-import { RouterLink, useRoute } from 'vue-router'
-import { routes } from './router'
-import { Sun } from '@vicons/tabler'
-import { WeatherMoon20Filled } from '@vicons/fluent'
-import { FullscreenOutlined } from '@vicons/antd'
-import screenfull from 'screenfull'
+import { FullscreenOutlined } from '@vicons/antd';
+import { WeatherMoon20Filled } from '@vicons/fluent';
+import { Sun } from '@vicons/tabler';
+import { darkTheme } from 'naive-ui';
+import screenfull from 'screenfull';
+import { defineComponent, h, ref } from "vue";
+import { RouterLink, useRoute } from 'vue-router';
+import { routes } from './router';
 
 function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
