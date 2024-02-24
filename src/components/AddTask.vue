@@ -252,27 +252,32 @@ export default defineComponent({
     },
     setup (props, {emit}) {
 
-        const initialState = {
-                inputValue: false,
-                sourceValue: null,
-                sourceProp: {
-                    exactlyOnce: 1
-                },
-                sinkValue: null,
-                sourceConfig: null,
-                transformValue: null,
-                sinkConfig: null,
-                sinkProp: {
-                    sinkEnable2pc: 1,
-                    sinkEnableDelete: 1
-                },
-                jsonValue: null,
+        const formInitValue = {
+            inputValue: false,
+            sourceValue: null,
+            sourceProp: {
+                exactlyOnce: 1
+            },
+            sinkValue: null,
+            sourceConfig: null,
+            transformValue: null,
+            sinkConfig: null,
+            sinkProp: {
+                sinkEnable2pc: 1,
+                sinkEnableDelete: 1
+            },
+            jsonValue: null,
+        };
+        const formData = ref({ ...formInitValue });
+        const resetForm = () => { 
+            formData.value = formInitValue;
+            formData.value.sourceProp = {
+                exactlyOnce: 1
             };
-        const formData = ref(initialState);
-        const resetForm = () => {
-            // formData.value = initialState;
-            // Object.assign(formData, initialState);
-            // formRef.value = null;
+            formData.value.sinkProp = {
+                sinkEnable2pc: 1,
+                sinkEnableDelete: 1
+            };
         };
         const renderIcon = (icon) => {
             return h(NIcon,{
