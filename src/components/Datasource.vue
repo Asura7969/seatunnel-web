@@ -27,7 +27,7 @@
 
   </n-space>
   <!-- 新增数据源 -->
-  <AddDatasource ref="addSource" @show="activate"/>
+  <AddDatasource ref="addSource" @update:show="activate"/>
 </template>
 
 <script>

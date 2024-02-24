@@ -146,8 +146,8 @@ export default defineComponent({
             size: ref("small"),
             renderLabel: (option) => {
                 return [
-                option.icon,
-                option.label
+                    option.icon,
+                    option.label
                 ];
             },
             update,

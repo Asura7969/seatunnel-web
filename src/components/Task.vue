@@ -27,7 +27,7 @@
 
   </n-space>
   <!-- 新建任务 -->
-  <AddTask ref="addTask" @show="activate"/>
+  <AddTask ref="addTask" @update:show="activate"/>
 </template>
 
 <script>
@@ -151,7 +151,7 @@ export default defineComponent({
         addTask.value.active = show;
 		}
     runningJobs().then(res => {
-      console.log(res.data)
+      // console.log(res.data)
     })
     return {
       data,
