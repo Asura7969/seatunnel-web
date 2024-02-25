@@ -2,5 +2,4 @@
   <h1>Develop</h1>
 </template>
 
-<script>
-</script>
+<script></script>

@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import svgLoader from 'vite-svg-loader'
+import VueSetupExtend from 'vite-plugin-vue-setup-extend'
 import {viteMockServe} from "vite-plugin-mock";
 
 export default defineConfig({
@@ -15,6 +16,7 @@ export default defineConfig({
         }
       }
     }),
+    VueSetupExtend(),
     viteMockServe({
       mockPath: "./src/mock",
       localEnabled: true,
