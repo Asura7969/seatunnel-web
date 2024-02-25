@@ -24,6 +24,10 @@ export const sysInfo = function(e){
     return req('get','/hazelcast/rest/maps/system-monitoring-information')  
 }
 
+export const getDatasource = function(){
+    return req('get','/datasource/queryAll')  
+}
+
 // import { request1, request2 } from '../api/api' \
 // 
 // request1(123)     //函数名以及传参

@@ -118,7 +118,7 @@ export default defineComponent({
         const active = ref(false)
         const placement = ref("right");
         const maskClick = (e) => {
-            emit("show", false);
+            active.value = false;
         };
         const submit = () => {
             // TODO: 新增接口

@@ -1,11 +1,35 @@
 import Mock from 'mockjs'
 
+// 查询数据源
+Mock.mock("/datasource/queryAll", "get", () => {
+  return {
+      code: 200,
+      data: [{
+        "id": 2,
+        "name": "数仓Doris",
+        "type": "DORIS"
+      },{
+        "id": 1,
+        "name": "sim",
+        "type": "MYSQL"
+      },{
+        "id": 3,
+        "name": "mes",
+        "type": "PG"
+      },{
+        "id": 4,
+        "name": "数仓StarRocks",
+        "type": "STARROCKS"
+      }]
+  }
+})
+
 Mock.mock("/hazelcast/rest/maps/stop-job", "post", () => {
     return {
         code: 200,
         data: {
-            "jobId": 733584788375666689
-            }
+          "jobId": 733584788375666689
+        }
     }
 })
 

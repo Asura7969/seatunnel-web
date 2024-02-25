@@ -235,6 +235,7 @@ import MysqlIcon from '../assets/mysql.svg';
 import PostgresqlIcon from '../assets/postgresql.svg';
 import StarrocksIcon from '../assets/starrocks.svg';
 import { GroupResource } from "@vicons/carbon";
+import { queryDatasource } from '../api/common';
 
 export default defineComponent({
     name: "AddTask",
@@ -279,39 +280,17 @@ export default defineComponent({
                 sinkEnableDelete: 1
             };
         };
-        const renderIcon = (icon) => {
-            return h(NIcon,{
-                        style: {
-                            verticalAlign: "-0.15em",
-                            marginRight: "4px"
-                        }
-                    },{ 
-                        default: () => h(icon)
-                    }
-            );
-        };
 
-        const generalOptions = [{
-            label: '数仓Doris',
-            value: '2',
-            type: 'DORIS',
-            icon: renderIcon(DorisIcon)
-        },{
-            label: 'sim',
-            value: '1',
-            type: 'MYSQL',
-            icon: renderIcon(MysqlIcon)
-        },{
-            label: 'mes',
-            value: '3',
-            type: 'PG',
-            icon: renderIcon(PostgresqlIcon)
-        },{
-            label: '数仓StarRocks',
-            value: '4',
-            type: 'STARROCKS',
-            icon: renderIcon(StarrocksIcon)
-        }];
+        const generalOptions = ref([]);
+
+        onBeforeMount(() => {
+            queryDatasource().then(result => {
+                generalOptions.value = result;
+            }).catch(error => {
+                console.error(error);
+            });
+        })
+
         const formRef = ref(null);
         const sourceType = ref(null);
         const sinkType = ref(null);
@@ -329,12 +308,12 @@ export default defineComponent({
         };
 
         const updateSource = (value, option) => {
-            const selected = generalOptions.filter(o=> o.value == value)[0];
+            const selected = generalOptions.value.filter(o=> o.value == value)[0];
             sourceType.value = selected.type;
             // console.log("update option: " + JSON.stringify(option));
         };
         const updateSink = (value, option) => {
-            const selected = generalOptions.filter(o=> o.value == value)[0];
+            const selected = generalOptions.value.filter(o=> o.value == value)[0];
             sinkType.value = selected.type;
         };
         const railStyle = ({focused, checked}) => {
