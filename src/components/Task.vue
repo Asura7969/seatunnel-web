@@ -1,59 +1,98 @@
 <template>
-  <n-space vertical :size="12">
-    <n-space justify="end">
-      <n-button-group>
-        <n-button
-          ghost
-          color="#8a2be2"
-          style="margin: auto"
-          @click="activate(true)"
-        >
-          <template #icon>
-            <n-icon>
-              <AppstoreAddOutlined />
-            </n-icon>
-          </template>
-          新增
-        </n-button>
-      </n-button-group>
+  <n-config-provider :hljs="hljs">
+    <n-space vertical :size="12">
+      <n-space justify="end">
+        <n-button-group>
+          <n-button
+            ghost
+            color="#8a2be2"
+            style="margin: auto"
+            @click="activate(true)"
+          >
+            <template #icon>
+              <n-icon>
+                <AppstoreAddOutlined />
+              </n-icon>
+            </template>
+            新增
+          </n-button>
+        </n-button-group>
+      </n-space>
+      <n-data-table
+        :columns="columns"
+        :data="data"
+        :pagination="pagination"
+        :bordered="true"
+        :max-height="tableHeight"
+        :min-height="tableHeight"
+        size="small"
+      />
+      <n-space justify="end">
+        <n-pagination
+          v-model:page="page"
+          v-model:page-size="pageSize"
+          :item-count="100"
+          :default-page-size="20"
+          :default-page="1"
+          show-size-picker
+          :page-sizes="[20, 50, 100]"
+          @update:page="updatePage"
+          @update:page-size="updatePageSize"
+        />
+      </n-space>
     </n-space>
-    <n-data-table
-      :columns="columns"
-      :data="data"
-      :pagination="pagination"
-      :bordered="true"
-      :max-height="250"
-      size="small"
-    />
-  </n-space>
-  <!-- 新建任务 -->
-  <AddTask ref="addTask" @update:show="activate" />
+    <!-- 新建任务 -->
+    <AddTask ref="addTask" @update:show="activate" @reload="reload" />
+    <!-- 任务详情 -->
+    <n-modal v-model:show="showDetail">
+      <n-card
+        style="width: 850px; height: 500px"
+        :title="taskName"
+        embedded
+        :bordered="false"
+        size="small"
+        role="dialog"
+        aria-modal="true"
+      >
+        <template #header-extra></template>
+        <n-scrollbar x-scrollable style="max-height: 400px">
+          <n-code :code="taskJson" language="json" />
+        </n-scrollbar>
+
+        <template #footer></template>
+      </n-card>
+    </n-modal>
+  </n-config-provider>
 </template>
 
 <script>
 import { h, defineComponent } from "vue";
 import { AppstoreAddOutlined } from "@vicons/antd";
 import AddTask from "./AddTask.vue";
-import { runningJobs } from "../api/api";
+import { runningJobs, getTaskList, getTaskJsonById } from "../api/api";
+import hljs from "highlight.js/lib/core";
+import json from "highlight.js/lib/languages/json";
+
+hljs.registerLanguage("json", json);
 
 function tagType(row) {
   if (
-    row.jobStatus == "CANCELING" ||
-    row.jobStatus == "CANCELED" ||
-    row.jobStatus == "FAILED"
+    row.status == "CANCELING" ||
+    row.status == "CANCELED" ||
+    row.status == "FAILED"
   ) {
     return "error";
   } else if (
-    row.jobStatus == "RUNNING" ||
-    row.jobStatus == "DOING_SAVEPOINT" ||
-    row.jobStatus == "SAVEPOINT_DONE" ||
-    row.jobStatus == "FAILING"
+    row.status == "RUNNING" ||
+    row.status == "DOING_SAVEPOINT" ||
+    row.status == "SAVEPOINT_DONE" ||
+    row.status == "FAILING"
   ) {
     return "success";
   } else if (
-    row.jobStatus == "SCHEDULED" ||
-    row.jobStatus == "CREATED" ||
-    row.jobStatus == "INITIALIZING"
+    row.status == "SCHEDULED" ||
+    row.status == "CREATED" ||
+    row.status == "INITIALIZING"
   ) {
     return undefined;
   } else {
@@ -64,22 +103,22 @@ function tagType(row) {
 // https://github.com/apache/seatunnel/blob/2ad7d6523667fbe0e8054adfdd198a7535fe619e/seatunnel-engine/seatunnel-engine-core/src/main/java/org/apache/seatunnel/engine/core/job/JobStatus.java#L75
 function actionDesc(row) {
   if (
-    row.jobStatus == "SCHEDULED" ||
-    row.jobStatus == "CREATED" ||
-    row.jobStatus == "INITIALIZING"
+    row.status == "SCHEDULED" ||
+    row.status == "CREATED" ||
+    row.status == "INITIALIZING"
   ) {
     return "启动";
   } else if (
-    row.jobStatus == "RUNNING" ||
-    row.jobStatus == "DOING_SAVEPOINT" ||
-    row.jobStatus == "SAVEPOINT_DONE" ||
-    row.jobStatus == "FAILING"
+    row.status == "RUNNING" ||
+    row.status == "DOING_SAVEPOINT" ||
+    row.status == "SAVEPOINT_DONE" ||
+    row.status == "FAILING"
   ) {
     return "停止";
   } else if (
-    row.jobStatus == "CANCELING" ||
-    row.jobStatus == "CANCELED" ||
-    row.jobStatus == "FAILED"
+    row.status == "CANCELING" ||
+    row.status == "CANCELED" ||
+    row.status == "FAILED"
   ) {
     return "启动";
   } else {
@@ -87,23 +126,36 @@ function actionDesc(row) {
   }
 }
 
-const createColumns = ({ play }) => {
+const createColumns = ({ play, showModal }) => {
   return [
     {
-      title: "jobId",
-      key: "jobId",
+      title: "id",
+      key: "id",
       resizable: true,
       minWidth: 200,
     },
     {
-      title: "jobName",
-      key: "jobName",
+      title: "name",
+      key: "name",
       resizable: true,
       minWidth: 200,
+      render(row) {
+        return h(
+          NButton,
+          {
+            strong: true,
+            size: "small",
+            type: "info",
+            quaternary: true,
+            onClick: () => showModal(row),
+          },
+          { default: () => row.name }
+        );
+      },
     },
     {
-      title: "jobStatus",
-      key: "jobStatus",
+      title: "status",
+      key: "status",
       render(row) {
         return h(
           NTag,
@@ -112,7 +164,7 @@ const createColumns = ({ play }) => {
             bordered: false,
             size: "small",
           },
-          { default: () => row.jobStatus }
+          { default: () => row.status }
         );
       },
     },
@@ -125,48 +177,35 @@ const createColumns = ({ play }) => {
       title: "操作",
       key: "actions",
       render(row) {
-        return h(
-          NButton,
-          {
-            strong: true,
-            size: "small",
-            type: "info",
-            quaternary: true,
-            onClick: () => play(row),
-          },
-          { default: () => actionDesc(row) }
-        );
+        return [
+          h(
+            NButton,
+            {
+              strong: true,
+              size: "small",
+              type: "info",
+              quaternary: true,
+              onClick: () => play(row),
+            },
+            { default: () => actionDesc(row) }
+          ),
+          h(NDivider, { vertical: true }),
+          h(
+            NButton,
+            {
+              strong: true,
+              size: "small",
+              type: "info",
+              quaternary: true,
+              onClick: () => play(row),
+            },
+            { default: () => "详情" }
+          ),
+        ];
       },
     },
   ];
 };
-
-const data = [
-  {
-    jobId: 1,
-    jobName: "mysql_cdc_to_ds",
-    jobStatus: "CANCELED",
-    createTime: "2024-02-01",
-  },
-  {
-    jobId: 2,
-    jobName: "pg_cdc_to_ds",
-    jobStatus: "RUNNING",
-    createTime: "2023-02-01",
-  },
-  {
-    jobId: 3,
-    jobName: "mysql_cdc_to_ds",
-    jobStatus: "CANCELED",
-    createTime: "2024-02-01",
-  },
-  {
-    jobId: 4,
-    jobName: "mysql_cdc_to_ds",
-    jobStatus: "RUNNING",
-    createTime: "2024-02-01",
-  },
-];
 
 export default defineComponent({
   components: {
@@ -174,26 +213,115 @@ export default defineComponent({
     AddTask,
   },
   setup() {
+    let tableHeight = window.innerHeight - 240;
     const message = useMessage();
     const addTask = ref(false);
     const activate = (show) => {
       const { active } = addTask.value;
       addTask.value.active = show;
     };
-    runningJobs().then((res) => {
-      // console.log(res.data)
+    let data = reactive([]);
+    const total = ref(0);
+    const page = ref(1);
+    const pageSize = ref(10);
+
+    const updatePage = (pageNum) => {
+      let count = typeof pageSize.value == "undefined" ? 20 : pageSize.value;
+      console.log("ref page:", pageNum);
+      console.log("ref pageSize:", count);
+    };
+
+    const updatePageSize = (pageCount) => {
+      let num = typeof page.value == "undefined" ? 1 : page.value;
+
+      console.log("ref page:", num);
+      console.log("pageSize:", pageCount);
+    };
+
+    const taskList = () => {
+      getTaskList()
+        .then((res) => {
+          console.log("请求任务数据");
+          res.data.list.forEach((v, i) => {
+            data.push({
+              id: v.id,
+              name: v.name,
+              status: v.status,
+              createTime: v.createTime,
+            });
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    const taskJson = ref(`""`);
+
+    onMounted(() => {
+      getTaskList()
+        .then((res) => {
+          console.log("请求任务数据");
+          res.data.list.forEach((v, i) => {
+            data.push({
+              id: v.id,
+              name: v.name,
+              status: v.status,
+              createTime: v.createTime,
+            });
+          });
+          total.value = res.total;
+          page.value = res.page;
+          pageSize.value = res.pageSize;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     });
+
+    const reload = () => {
+      console.log("reload方法");
+      taskList();
+    };
+
+    const showDetail = ref(false);
+    const taskName = ref("");
+
     return {
       data,
       columns: createColumns({
         play(row) {
-          message.info(`Play ${row.title}`);
+          message.info(`Play ${row.name}`);
+        },
+        showModal(row) {
+          showDetail.value = true;
+          getTaskJsonById(row)
+            .then((res) => {
+              taskJson.value = JSON.stringify(res.data, null, 2);
+              taskName.value = row.name;
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         },
       }),
       pagination: false,
       activate,
       addTask,
+      reload,
+      tableHeight,
+      page,
+      pageSize,
+      total,
+      updatePage,
+      updatePageSize,
+      showDetail,
+      hljs,
+      taskJson,
+      taskName,
     };
   },
 });
 </script>
+
+<style scoped lang="scss"></style>

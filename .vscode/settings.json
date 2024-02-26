@@ -1,26 +1,25 @@
 {
-    "debug.allowBreakpointsEverywhere": true,
-    "workbench.colorTheme": "Default Dark+",
-    "workbench.editor.empty.hint": "hidden",
-    "eslint.codeActionsOnSave.rules": null,
-    "eslint.format.enable": true,
-    "eslint.validate": [
-      "javascript",
-      "javascriptreact",
-      "typescript",
-      "typescriptreact"
-    ],
-    "stylelint.validate": ["css", "less", "postcss", "scss", "sass"],
-    "prettier.configPath": ".prettierrc.js",
-    "editor.formatOnSave": true,
-    "[vue]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "prettier.printWidth": 200,
-    "prettier.enable": true,
-    "prettier.semi": false, // 句尾添加分号
-    "prettier.singleQuote": true, // 使用单引号代替双引号
-    "prettier.tabWidth": 4, // 缩进字节数
-    "prettier.useTabs": false // 缩进不使用tab，使用空格
-  }
-  
+  "debug.allowBreakpointsEverywhere": true,
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.editor.empty.hint": "hidden",
+  "eslint.codeActionsOnSave.rules": null,
+  "eslint.format.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "stylelint.validate": ["css", "less", "postcss", "scss", "sass"],
+  "prettier.configPath": ".prettierrc.js",
+  "editor.formatOnSave": true,
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.printWidth": 200,
+  "prettier.enable": true,
+  "prettier.semi": false, // 句尾添加分号
+  "prettier.singleQuote": true, // 使用单引号代替双引号
+  "prettier.tabWidth": 4, // 缩进字节数
+  "prettier.useTabs": false // 缩进不使用tab，使用空格
+}

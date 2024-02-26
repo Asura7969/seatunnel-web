@@ -19,7 +19,7 @@
             size="small"
           >
             <n-timeline size="large" :icon-size="20">
-              <n-collapse :default-expanded-names="['1', '2', '3']">
+              <n-collapse :default-expanded-names="['1', '3']">
                 <template #header-extra> </template>
                 <template #arrow></template>
 
@@ -31,6 +31,17 @@
                   </template>
                   <n-collapse-item title="Source" name="1">
                     <n-grid :cols="24" :x-gap="24">
+                      <n-form-item-gi
+                        :span="24"
+                        label="job name: "
+                        path="jobName"
+                      >
+                        <n-input
+                          v-model:value="model.jobName"
+                          type="text"
+                          placeholder="jobName"
+                        />
+                      </n-form-item-gi>
                       <n-form-item-gi
                         :span="12"
                         label="model: "
@@ -297,6 +308,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const formInitValue = {
       inputValue: false,
+      jobName: null,
       sourceValue: null,
       sourceProp: {
         exactlyOnce: 1,
@@ -348,6 +360,8 @@ export default defineComponent({
     const submit = () => {
       // TODO: 提交任务接口
       console.log("submit");
+      emit("reload");
+
       maskClick();
     };
 

@@ -63,7 +63,7 @@
   </n-drawer>
 </template>
 
-<script>
+<script name="AddDatasource">
 import { defineComponent, ref } from "vue";
 import DorisIcon from "../assets/doris.svg";
 import MysqlIcon from "../assets/mysql.svg";
@@ -71,21 +71,7 @@ import PostgresqlIcon from "../assets/postgresql.svg";
 import StarrocksIcon from "../assets/starrocks.svg";
 import { AddSquare24Regular } from "@vicons/fluent";
 import { CancelOutlined } from "@vicons/material";
-
-const renderIcon = (icon) => {
-  return h(
-    NIcon,
-    {
-      style: {
-        verticalAlign: "-0.15em",
-        marginRight: "4px",
-      },
-    },
-    {
-      default: () => h(icon),
-    }
-  );
-};
+import { renderIcon } from "../api/common";
 
 const generalOptions = [
   {
@@ -111,7 +97,6 @@ const generalOptions = [
 ];
 
 export default defineComponent({
-  name: "AddDatasource",
   components: {
     DorisIcon,
     MysqlIcon,

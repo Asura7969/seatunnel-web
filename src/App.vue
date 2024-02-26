@@ -14,7 +14,7 @@
           <n-gradient-text
             gradient="linear-gradient(130deg,#24c6dc,#5433ff 41.07%,#f09 76.05%)"
           >
-            <h3>Seathnnel</h3>
+            <h2>SeaTunnel</h2>
           </n-gradient-text>
         </n-space>
         <n-space class="tip" :size="20" align="center" style="line-height: 1">
