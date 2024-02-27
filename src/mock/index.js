@@ -1,5 +1,31 @@
 import Mock from "mockjs";
 
+// 查询任务表单
+Mock.mock(/\/task\/detail/, "get", (id) => {
+  return {
+    code: 200,
+    data: {
+      inputValue: false,
+      jobName: "回显任务",
+      sourceValue: 1,
+      sourceProp: {
+        exactlyOnce: 1,
+        tableName: "asdasd",
+        serverId: "56756",
+      },
+      sinkValue: 2,
+      transformValue: null,
+      sinkProp: {
+        sinkEnable2pc: 1,
+        sinkEnableDelete: 1,
+        tableName: "fghfghgh",
+        sinkLabelPrefix: "uyiuyhfg",
+      },
+      jsonValue: null,
+    },
+  };
+});
+
 // 查询数据源
 Mock.mock("/datasource/queryAll", "get", () => {
   return {
@@ -76,7 +102,7 @@ Mock.mock("/task/queryAll", "get", () => {
 });
 
 // 查询任务详情
-Mock.mock("/task/queryJsonById", "get", (id) => {
+Mock.mock(/\/task\/queryJsonById/, "get", (id) => {
   return {
     code: 200,
     data: {

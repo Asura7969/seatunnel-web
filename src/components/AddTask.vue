@@ -129,18 +129,6 @@
                           default-value="true"
                         />
                       </n-form-item-gi>
-                      <n-gi :span="24" v-if="sourceType == null">
-                        <n-form-item label="config: " path="sourceConfig">
-                          <n-input
-                            v-model:value="model.sourceConfig"
-                            type="textarea"
-                            placeholder="source config"
-                            :autosize="{
-                              minRows: 5,
-                            }"
-                          />
-                        </n-form-item>
-                      </n-gi>
                     </n-grid>
                   </n-collapse-item>
                 </n-timeline-item>
@@ -231,21 +219,6 @@
                         />
                       </n-form-item-gi>
                     </n-grid>
-
-                    <n-form-item
-                      label="config: "
-                      path="sinkConfig"
-                      v-if="sinkType == null"
-                    >
-                      <n-input
-                        v-model:value="model.sinkConfig"
-                        type="textarea"
-                        placeholder="sink config"
-                        :autosize="{
-                          minRows: 5,
-                        }"
-                      />
-                    </n-form-item>
                   </n-collapse-item>
                 </n-timeline-item>
               </n-collapse>
@@ -295,6 +268,7 @@ import { CancelOutlined, InputRound } from "@vicons/material";
 import { ApartmentOutlined } from "@vicons/antd";
 import { GroupResource } from "@vicons/carbon";
 import { queryDatasource } from "../api/common";
+import { getTaskDetailById } from "../api/api";
 
 export default defineComponent({
   components: {
@@ -306,6 +280,9 @@ export default defineComponent({
     InputRound,
   },
   setup(props, { emit }) {
+    const message = useMessage();
+    const sourceType = ref(null);
+    const sinkType = ref(null);
     const formInitValue = {
       inputValue: false,
       jobName: null,
@@ -314,9 +291,7 @@ export default defineComponent({
         exactlyOnce: 1,
       },
       sinkValue: null,
-      sourceConfig: null,
       transformValue: null,
-      sinkConfig: null,
       sinkProp: {
         sinkEnable2pc: 1,
         sinkEnableDelete: 1,
@@ -333,6 +308,22 @@ export default defineComponent({
         sinkEnable2pc: 1,
         sinkEnableDelete: 1,
       };
+      sourceType.value = null;
+      sinkType.value = null;
+    };
+
+    // 表单回显
+    const queryTaskId = (taskId) => {
+      getTaskDetailById(taskId)
+        .then((result) => {
+          console.log(result.data);
+          formData.value = result.data;
+          updateSource(result.data.sourceValue, null);
+          updateSink(result.data.sinkValue, null);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     };
 
     const generalOptions = ref([]);
@@ -348,8 +339,6 @@ export default defineComponent({
     });
 
     const formRef = ref(null);
-    const sourceType = ref(null);
-    const sinkType = ref(null);
     const active = ref(false);
     const placement = ref("right");
 
@@ -392,6 +381,7 @@ export default defineComponent({
 
     return {
       active,
+      queryTaskId,
       placement,
       maskClick,
       submit,

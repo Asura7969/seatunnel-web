@@ -33,11 +33,15 @@ export const getTaskList = function () {
   return req("get", "/task/queryAll");
 };
 
-// 获取任务详情
+// 获取任务json详情
 export const getTaskJsonById = function (id) {
-  return req("get", "/task/queryJsonById");
+  return req("get", "/task/queryJsonById/" + id);
 };
 
+// 查询任务表单详情
+export const getTaskDetailById = function (id) {
+  return req("get", "/task/detail/" + id);
+};
 // import { request1, request2 } from '../api/api' \
 //
 // request1(123)     //函数名以及传参

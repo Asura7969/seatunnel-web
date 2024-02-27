@@ -17,8 +17,25 @@
             新增
           </n-button>
         </n-button-group>
+        <n-button-group>
+          <n-button
+            ghost
+            color="#339BFF"
+            style="margin: auto"
+            @click="editTask()"
+          >
+            <template #icon>
+              <n-icon>
+                <EditTwotone />
+              </n-icon>
+            </template>
+            编辑
+          </n-button>
+        </n-button-group>
       </n-space>
       <n-data-table
+        v-model:checked-row-keys="checkedRowKeys"
+        @update:checked-row-keys="selectRow"
         :columns="columns"
         :data="data"
         :pagination="pagination"
@@ -50,9 +67,6 @@
         :title="taskName"
         embedded
         :bordered="false"
-        size="small"
-        role="dialog"
-        aria-modal="true"
       >
         <template #header-extra></template>
         <n-scrollbar x-scrollable style="max-height: 400px">
@@ -67,7 +81,7 @@
 
 <script>
 import { h, defineComponent } from "vue";
-import { AppstoreAddOutlined } from "@vicons/antd";
+import { AppstoreAddOutlined, EditTwotone } from "@vicons/antd";
 import AddTask from "./AddTask.vue";
 import { runningJobs, getTaskList, getTaskJsonById } from "../api/api";
 import hljs from "highlight.js/lib/core";
@@ -107,7 +121,7 @@ function actionDesc(row) {
     row.status == "CREATED" ||
     row.status == "INITIALIZING"
   ) {
-    return "启动";
+    return "部署";
   } else if (
     row.status == "RUNNING" ||
     row.status == "DOING_SAVEPOINT" ||
@@ -120,7 +134,7 @@ function actionDesc(row) {
     row.status == "CANCELED" ||
     row.status == "FAILED"
   ) {
-    return "启动";
+    return "部署";
   } else {
     return "undefined";
   }
@@ -128,6 +142,13 @@ function actionDesc(row) {
 
 const createColumns = ({ play, showModal }) => {
   return [
+    {
+      type: "selection",
+      multiple: false,
+      // disabled(row) {
+      //   return row.status === "RUNNING";
+      // },
+    },
     {
       title: "id",
       key: "id",
@@ -189,18 +210,18 @@ const createColumns = ({ play, showModal }) => {
             },
             { default: () => actionDesc(row) }
           ),
-          h(NDivider, { vertical: true }),
-          h(
-            NButton,
-            {
-              strong: true,
-              size: "small",
-              type: "info",
-              quaternary: true,
-              onClick: () => play(row),
-            },
-            { default: () => "详情" }
-          ),
+          // h(NDivider, { vertical: true }),
+          // h(
+          //   NButton,
+          //   {
+          //     strong: true,
+          //     size: "small",
+          //     type: "info",
+          //     quaternary: true,
+          //     onClick: () => play(row),
+          //   },
+          //   { default: () => "详情" }
+          // ),
         ];
       },
     },
@@ -210,6 +231,7 @@ const createColumns = ({ play, showModal }) => {
 export default defineComponent({
   components: {
     AppstoreAddOutlined,
+    EditTwotone,
     AddTask,
   },
   setup() {
@@ -248,6 +270,7 @@ export default defineComponent({
               name: v.name,
               status: v.status,
               createTime: v.createTime,
+              key: v.id,
             });
           });
         })
@@ -268,6 +291,7 @@ export default defineComponent({
               name: v.name,
               status: v.status,
               createTime: v.createTime,
+              key: v.id,
             });
           });
           total.value = res.total;
@@ -286,8 +310,26 @@ export default defineComponent({
 
     const showDetail = ref(false);
     const taskName = ref("");
+    const checkedRowKeysRef = ref([]);
+
+    const selectRow = (keys, rows) => {
+      checkedRowKeysRef.value = [rows[0].id];
+    };
+
+    const editTask = () => {
+      if (checkedRowKeysRef.value.length === 0) {
+        message.warning("请选择任务");
+      } else {
+        console.log("开始编辑", checkedRowKeysRef.value[0]);
+        activate(true);
+        addTask.value.queryTaskId(checkedRowKeysRef.value[0]);
+      }
+    };
 
     return {
+      checkedRowKeys: checkedRowKeysRef,
+      selectRow,
+      editTask,
       data,
       columns: createColumns({
         play(row) {
