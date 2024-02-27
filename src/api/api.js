@@ -42,9 +42,3 @@ export const getTaskJsonById = function (id) {
 export const getTaskDetailById = function (id) {
   return req("get", "/task/detail/" + id);
 };
-// import { request1, request2 } from '../api/api' \
-//
-// request1(123)     //函数名以及传参
-// .then(res => {
-//     console.log(res)    //成功后返回的数据
-// })

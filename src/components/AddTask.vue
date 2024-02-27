@@ -42,27 +42,20 @@
                           placeholder="jobName"
                         />
                       </n-form-item-gi>
-                      <n-form-item-gi
-                        :span="12"
-                        label="model: "
-                        path="inputValue"
-                      >
-                        <n-switch
-                          :rail-style="railStyle"
-                          :round="false"
-                          v-model:value="model.inputValue"
-                        >
-                          <template #checked> batch </template>
-                          <template #unchecked> stream </template>
-                        </n-switch>
+                      <n-form-item-gi :span="12" label="model: " path="jobType">
+                        <n-select
+                          v-model:value="model.jobType"
+                          :options="jobOptions"
+                          default-value="STREAMING"
+                        />
                       </n-form-item-gi>
                       <n-form-item-gi
                         :span="12"
                         label="source: "
-                        path="sourceValue"
+                        path="sourceId"
                       >
                         <n-select
-                          v-model:value="model.sourceValue"
+                          v-model:value="model.sourceId"
                           placeholder="选择Source"
                           :render-label="renderLabel"
                           :options="generalOptions"
@@ -160,9 +153,9 @@
                   <n-collapse-item title="Sink" name="3">
                     <n-grid :cols="24" :x-gap="24">
                       <n-gi :span="24">
-                        <n-form-item label="output: " path="sinkValue">
+                        <n-form-item label="output: " path="sinkId">
                           <n-select
-                            v-model:value="model.sinkValue"
+                            v-model:value="model.sinkId"
                             placeholder="选择Sink"
                             :render-label="renderLabel"
                             :options="generalOptions"
@@ -284,17 +277,17 @@ export default defineComponent({
     const sourceType = ref(null);
     const sinkType = ref(null);
     const formInitValue = {
-      inputValue: false,
+      jobType: "STREAMING",
       jobName: null,
-      sourceValue: null,
+      sourceId: null,
       sourceProp: {
-        exactlyOnce: 1,
+        exactlyOnce: "true",
       },
-      sinkValue: null,
+      sinkId: null,
       transformValue: null,
       sinkProp: {
-        sinkEnable2pc: 1,
-        sinkEnableDelete: 1,
+        sinkEnable2pc: "true",
+        sinkEnableDelete: "true",
       },
       jsonValue: null,
     };
@@ -302,11 +295,11 @@ export default defineComponent({
     const resetForm = () => {
       formData.value = formInitValue;
       formData.value.sourceProp = {
-        exactlyOnce: 1,
+        exactlyOnce: "true",
       };
       formData.value.sinkProp = {
-        sinkEnable2pc: 1,
-        sinkEnableDelete: 1,
+        sinkEnable2pc: "true",
+        sinkEnableDelete: "true",
       };
       sourceType.value = null;
       sinkType.value = null;
@@ -318,8 +311,8 @@ export default defineComponent({
         .then((result) => {
           console.log(result.data);
           formData.value = result.data;
-          updateSource(result.data.sourceValue, null);
-          updateSink(result.data.sinkValue, null);
+          updateSource(result.data.sourceId, null);
+          updateSink(result.data.sinkId, null);
         })
         .catch((error) => {
           console.error(error);
@@ -408,11 +401,21 @@ export default defineComponent({
       options: [
         {
           label: "true",
-          value: 1,
+          value: "true",
         },
         {
           label: "false",
-          value: 0,
+          value: "false",
+        },
+      ],
+      jobOptions: [
+        {
+          label: "BATCH",
+          value: "BATCH",
+        },
+        {
+          label: "STREAMING",
+          value: "STREAMING",
         },
       ],
     };

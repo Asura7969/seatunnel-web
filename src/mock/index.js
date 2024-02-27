@@ -5,19 +5,19 @@ Mock.mock(/\/task\/detail/, "get", (id) => {
   return {
     code: 200,
     data: {
-      inputValue: false,
+      jobType: "STREAMING",
       jobName: "回显任务",
-      sourceValue: 1,
+      sourceId: 1,
       sourceProp: {
-        exactlyOnce: 1,
+        exactlyOnce: "true",
         tableName: "asdasd",
         serverId: "56756",
       },
-      sinkValue: 2,
+      sinkId: 2,
       transformValue: null,
       sinkProp: {
-        sinkEnable2pc: 1,
-        sinkEnableDelete: 1,
+        sinkEnable2pc: "true",
+        sinkEnableDelete: "true",
         tableName: "fghfghgh",
         sinkLabelPrefix: "uyiuyhfg",
       },
