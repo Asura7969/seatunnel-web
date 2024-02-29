@@ -1,5 +1,9 @@
 import Mock from "mockjs";
 
+Mock.setup({
+  timeout: "1000-3000",
+});
+
 // 创建/编辑 任务
 Mock.mock("/task/upsert", "post", (option) => {
   return {
@@ -92,7 +96,7 @@ Mock.mock("/datasource/queryAll", "get", () => {
 });
 
 // 查询任务列表
-Mock.mock("/task/queryAll", "get", () => {
+Mock.mock(/\/task\/queryAll/, "get", (pageNum, pageSize) => {
   return {
     code: 200,
     data: {

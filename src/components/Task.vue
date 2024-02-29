@@ -2,51 +2,55 @@
   <n-config-provider :hljs="hljs">
     <n-space vertical :size="12">
       <n-space justify="end">
-        <n-button-group>
-          <n-button
-            ghost
-            color="#8a2be2"
-            style="margin: auto"
-            @click="activate(true)"
-          >
-            <template #icon>
-              <n-icon>
-                <AppstoreAddOutlined />
-              </n-icon>
-            </template>
-            新增
-          </n-button>
-        </n-button-group>
-        <n-button-group>
-          <n-button
-            ghost
-            color="#339BFF"
-            style="margin: auto"
-            @click="editTask()"
-          >
-            <template #icon>
-              <n-icon>
-                <EditTwotone />
-              </n-icon>
-            </template>
-            编辑
-          </n-button>
-        </n-button-group>
+        <n-button ghost color="#900C3F" style="margin: auto" @click="reload">
+          <template #icon>
+            <n-icon>
+              <ReloadOutlined />
+            </n-icon>
+          </template>
+          刷新
+        </n-button>
+        <n-button
+          ghost
+          color="#8a2be2"
+          style="margin: auto"
+          @click="activate(true)"
+        >
+          <template #icon>
+            <n-icon>
+              <AppstoreAddOutlined />
+            </n-icon>
+          </template>
+          新增
+        </n-button>
+        <n-button
+          ghost
+          color="#339BFF"
+          style="margin: auto"
+          @click="editTask()"
+        >
+          <template #icon>
+            <n-icon>
+              <EditTwotone />
+            </n-icon>
+          </template>
+          编辑
+        </n-button>
       </n-space>
-      <n-spin :show="loading">
-        <n-data-table
-          v-model:checked-row-keys="checkedRowKeys"
-          @update:checked-row-keys="selectRow"
-          :columns="columns"
-          :data="data"
-          :pagination="pagination"
-          :bordered="true"
-          :max-height="tableHeight"
-          :min-height="tableHeight"
-          size="small"
-        />
-        <template #description> 加载中... </template>
-      </n-spin>
+      <n-data-table
+        v-if="tableShow"
+        remote
+        v-model:checked-row-keys="checkedRowKeys"
+        @update:checked-row-keys="selectRow"
+        :columns="columns"
+        :data="data"
+        :pagination="pagination"
+        :bordered="true"
+        :max-height="tableHeight"
+        :min-height="tableHeight"
+        :loading="loading"
+        size="small"
+      />
 
       <n-space justify="end">
         <n-pagination
@@ -58,7 +62,6 @@
           show-size-picker
           :page-sizes="[20, 50, 100]"
           @update:page="updatePage"
-          @update:page-size="updatePageSize"
         />
       </n-space>
     </n-space>
@@ -84,16 +87,10 @@
 </template>
 
 <script>
-import { h, defineComponent } from "vue";
-import { AppstoreAddOutlined, EditTwotone } from "@vicons/antd";
+import { h, defineComponent, ref, reactive, onMounted, nextTick } from "vue";
+import { AppstoreAddOutlined, EditTwotone, ReloadOutlined } from "@vicons/antd";
 import AddTask from "./AddTask.vue";
-import {
-  runningJobs,
-  getTaskList,
-  getTaskJsonById,
-  deployTask,
-  stopTask,
-} from "../api/api";
+import { getTaskList, getTaskJsonById, deployTask, stopTask } from "../api/api";
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
 
@@ -129,20 +126,22 @@ function actionDesc(row) {
   if (
     row.status == "SCHEDULED" ||
     row.status == "CREATED" ||
-    row.status == "INITIALIZING"
+    row.status == "UNKNOWABLE" ||
+    row.status == "FINISHED"
   ) {
     return "部署";
   } else if (
     row.status == "RUNNING" ||
     row.status == "DOING_SAVEPOINT" ||
-    row.status == "SAVEPOINT_DONE" ||
-    row.status == "FAILING"
+    row.status == "FAILING" ||
+    row.status == "CANCELING" ||
+    row.status == "INITIALIZING"
   ) {
     return "停止";
   } else if (
-    row.status == "CANCELING" ||
     row.status == "CANCELED" ||
-    row.status == "FAILED"
+    row.status == "FAILED" ||
+    row.status == "SAVEPOINT_DONE"
   ) {
     return "部署";
   } else {
@@ -216,6 +215,7 @@ const createColumns = ({ deployOrStop, showModal }) => {
               size: "small",
               type: "info",
               quaternary: true,
+              loading: row.loading,
               onClick: () => deployOrStop(row),
             },
             { default: () => actionDesc(row) }
@@ -243,9 +243,11 @@ export default defineComponent({
     AppstoreAddOutlined,
     EditTwotone,
     AddTask,
+    ReloadOutlined,
   },
   setup() {
-    const loading = ref(false);
+    const loading = ref(true);
+    const tableShow = ref(true);
     let tableHeight = window.innerHeight - 240;
     const message = useMessage();
     const addTask = ref(false);
@@ -258,49 +260,12 @@ export default defineComponent({
     const page = ref(1);
     const pageSize = ref(10);
 
-    const updatePage = (pageNum) => {
-      let count = typeof pageSize.value == "undefined" ? 20 : pageSize.value;
-      console.log("ref page:", pageNum);
-      console.log("ref pageSize:", count);
-    };
-
-    const updatePageSize = (pageCount) => {
-      let num = typeof page.value == "undefined" ? 1 : page.value;
-
-      console.log("ref page:", num);
-      console.log("pageSize:", pageCount);
-    };
-
-    const taskList = () => {
-      loading.value = true;
-      getTaskList()
-        .then((res) => {
-          if (res.code == 200) {
-            console.log("请求任务数据");
-            data.length = 0;
-            res.data.list.forEach((v, i) => {
-              data.push({
-                id: v.id,
-                name: v.name,
-                status: v.status,
-                createTime: v.createTime,
-                key: v.id,
-              });
-            });
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      loading.value = false;
-    };
-
     const taskJson = ref(`""`);
 
     onMounted(() => {
-      getTaskList()
+      getTaskList(1, 20)
         .then((res) => {
-          console.log("请求任务数据");
+          loading.value = true;
           res.data.list.forEach((v, i) => {
             data.push({
               id: v.id,
@@ -308,11 +273,13 @@ export default defineComponent({
               status: v.status,
               createTime: v.createTime,
               key: v.id,
+              loading: false,
             });
           });
           total.value = res.total;
           page.value = res.page;
           pageSize.value = res.pageSize;
+          loading.value = false;
         })
         .catch((error) => {
           console.error(error);
@@ -320,8 +287,29 @@ export default defineComponent({
     });
 
     const reload = () => {
-      console.log("reload方法");
-      taskList();
+      loading.value = true;
+      nextTick(() => {
+        getTaskList(page.value, pageSize.value)
+          .then((res) => {
+            if (res.code == 200) {
+              data.length = 0;
+              res.data.list.forEach((v, i) => {
+                data.push({
+                  id: v.id,
+                  name: v.name,
+                  status: v.status,
+                  createTime: v.createTime,
+                  key: v.id,
+                  loading: false,
+                });
+              });
+            }
+            loading.value = false;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
     };
 
     const showDetail = ref(false);
@@ -343,12 +331,14 @@ export default defineComponent({
     };
 
     return {
+      tableShow,
       checkedRowKeys: checkedRowKeysRef,
       selectRow,
       editTask,
       data,
       columns: createColumns({
         deployOrStop(row) {
+          row.loading = true;
           if (row.status == "RUNNING") {
             stopTask(row.id)
               .then((res) => {
@@ -358,6 +348,8 @@ export default defineComponent({
                   message.warning("停止失败");
                   console.log(res);
                 }
+                row.loading = false;
+                row.status = "FINISHED";
               })
               .catch((error) => {
                 console.error(error);
@@ -372,6 +364,8 @@ export default defineComponent({
                   message.error("部署失败");
                   console.log(res);
                 }
+                row.loading = false;
+                row.status = "RUNNING";
               })
               .catch((error) => {
                 console.error(error);
@@ -399,13 +393,34 @@ export default defineComponent({
       page,
       pageSize,
       total,
-      updatePage,
-      updatePageSize,
       showDetail,
       hljs,
       taskJson,
       taskName,
       loading,
+      updatePage(pageNum) {
+        let count = typeof pageSize.value == "undefined" ? 20 : pageSize.value;
+        loading.value = true;
+        getTaskList(pageNum, count)
+          .then((res) => {
+            data.length = 0;
+            console.log(res);
+            res.data.list.forEach((v, i) => {
+              data.push({
+                id: v.id,
+                name: v.name,
+                status: v.status,
+                createTime: v.createTime,
+                key: v.id,
+                loading: false,
+              });
+            });
+            loading.value = false;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
     };
   },
 });

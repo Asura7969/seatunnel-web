@@ -29,8 +29,8 @@ export const getDatasource = function () {
   return req("get", "/datasource/queryAll");
 };
 
-export const getTaskList = function () {
-  return req("get", "/task/queryAll");
+export const getTaskList = function (pageNum, pageSize) {
+  return req("get", "/task/queryAll", { page: pageNum, pageSize: pageSize });
 };
 
 // 获取任务json详情

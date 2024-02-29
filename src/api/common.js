@@ -19,7 +19,7 @@ export const renderIcon = (icon) => {
   );
 };
 
-const chooseIcon = (type) => {
+export const chooseIcon = (type) => {
   if (type == "DORIS") {
     return renderIcon(DorisIcon);
   } else if (type == "MYSQL") {
@@ -32,24 +32,4 @@ const chooseIcon = (type) => {
     console.log("未知数据源:" + type);
     return null;
   }
-};
-
-export const queryDatasource = async function () {
-  const datasource = [];
-  getDatasource()
-    .then((res) => {
-      console.log(res);
-      res.data.forEach((v, i) => {
-        datasource.push({
-          label: v.name,
-          value: v.id,
-          type: v.type,
-          icon: chooseIcon(v.type),
-        });
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  return datasource;
 };

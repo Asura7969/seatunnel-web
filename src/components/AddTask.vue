@@ -255,7 +255,7 @@
       </n-tabs>
       <template #footer>
         <n-flex justify="end">
-          <n-button color="#2080f0" @click="submit">
+          <n-button color="#2080f0" @click="submit" :loading="loading">
             <template #icon>
               <n-icon>
                 <AddSquare24Regular />
@@ -283,8 +283,8 @@ import { AddSquare24Regular, AddSquare20Filled } from "@vicons/fluent";
 import { CancelOutlined, InputRound } from "@vicons/material";
 import { ApartmentOutlined } from "@vicons/antd";
 import { GroupResource } from "@vicons/carbon";
-import { queryDatasource } from "../api/common";
-import { getTaskDetailById, upsertTask } from "../api/api";
+import { getTaskDetailById, upsertTask, getDatasource } from "../api/api";
+import { chooseIcon } from "../api/common";
 
 export default defineComponent({
   components: {
@@ -296,6 +296,7 @@ export default defineComponent({
     InputRound,
   },
   setup(props, { emit }) {
+    const loading = ref(false);
     const message = useMessage();
     const sourceType = ref(null);
     const sinkType = ref(null);
@@ -352,12 +353,20 @@ export default defineComponent({
     const generalOptions = ref([]);
 
     onBeforeMount(() => {
-      queryDatasource()
-        .then((result) => {
-          generalOptions.value = result;
+      getDatasource()
+        .then((res) => {
+          console.log(res);
+          res.data.forEach((v, i) => {
+            generalOptions.value.push({
+              label: v.name,
+              value: v.id,
+              type: v.type,
+              icon: chooseIcon(v.type),
+            });
+          });
         })
-        .catch((error) => {
-          console.error(error);
+        .catch((err) => {
+          console.log(err);
         });
     });
 
@@ -372,21 +381,24 @@ export default defineComponent({
     const submit = () => {
       // TODO: 提交任务接口
       const fdata = JSON.stringify(formData.value, null, 2);
+      loading.value = true;
       upsertTask(fdata)
         .then((res) => {
           console.log(res);
 
           if (res.code == 200) {
-            message.success("提交成功");
-            emit("reload");
             maskClick();
+            message.success("提交成功");
           } else {
             message.error("提交失败");
           }
+          loading.value = false;
         })
         .catch((error) => {
           console.error(error);
+          loading.value = false;
         });
+      emit("reload");
     };
 
     const updateSource = (value, option) => {
@@ -415,6 +427,7 @@ export default defineComponent({
     };
 
     return {
+      loading,
       active,
       queryTaskId,
       placement,
