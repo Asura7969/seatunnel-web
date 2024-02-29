@@ -33,17 +33,21 @@
           </n-button>
         </n-button-group>
       </n-space>
-      <n-data-table
-        v-model:checked-row-keys="checkedRowKeys"
-        @update:checked-row-keys="selectRow"
-        :columns="columns"
-        :data="data"
-        :pagination="pagination"
-        :bordered="true"
-        :max-height="tableHeight"
-        :min-height="tableHeight"
-        size="small"
-      />
+      <n-spin :show="loading">
+        <n-data-table
+          v-model:checked-row-keys="checkedRowKeys"
+          @update:checked-row-keys="selectRow"
+          :columns="columns"
+          :data="data"
+          :pagination="pagination"
+          :bordered="true"
+          :max-height="tableHeight"
+          :min-height="tableHeight"
+          size="small"
+        />
+        <template #description> 加载中... </template>
+      </n-spin>
+
       <n-space justify="end">
         <n-pagination
           v-model:page="page"
@@ -83,7 +87,13 @@
 import { h, defineComponent } from "vue";
 import { AppstoreAddOutlined, EditTwotone } from "@vicons/antd";
 import AddTask from "./AddTask.vue";
-import { runningJobs, getTaskList, getTaskJsonById } from "../api/api";
+import {
+  runningJobs,
+  getTaskList,
+  getTaskJsonById,
+  deployTask,
+  stopTask,
+} from "../api/api";
 import hljs from "highlight.js/lib/core";
 import json from "highlight.js/lib/languages/json";
 
@@ -140,7 +150,7 @@ function actionDesc(row) {
   }
 }
 
-const createColumns = ({ play, showModal }) => {
+const createColumns = ({ deployOrStop, showModal }) => {
   return [
     {
       type: "selection",
@@ -206,7 +216,7 @@ const createColumns = ({ play, showModal }) => {
               size: "small",
               type: "info",
               quaternary: true,
-              onClick: () => play(row),
+              onClick: () => deployOrStop(row),
             },
             { default: () => actionDesc(row) }
           ),
@@ -235,6 +245,7 @@ export default defineComponent({
     AddTask,
   },
   setup() {
+    const loading = ref(false);
     let tableHeight = window.innerHeight - 240;
     const message = useMessage();
     const addTask = ref(false);
@@ -261,22 +272,27 @@ export default defineComponent({
     };
 
     const taskList = () => {
+      loading.value = true;
       getTaskList()
         .then((res) => {
-          console.log("请求任务数据");
-          res.data.list.forEach((v, i) => {
-            data.push({
-              id: v.id,
-              name: v.name,
-              status: v.status,
-              createTime: v.createTime,
-              key: v.id,
+          if (res.code == 200) {
+            console.log("请求任务数据");
+            data.length = 0;
+            res.data.list.forEach((v, i) => {
+              data.push({
+                id: v.id,
+                name: v.name,
+                status: v.status,
+                createTime: v.createTime,
+                key: v.id,
+              });
             });
-          });
+          }
         })
         .catch((error) => {
           console.error(error);
         });
+      loading.value = false;
     };
 
     const taskJson = ref(`""`);
@@ -332,8 +348,36 @@ export default defineComponent({
       editTask,
       data,
       columns: createColumns({
-        play(row) {
-          message.info(`Play ${row.name}`);
+        deployOrStop(row) {
+          if (row.status == "RUNNING") {
+            stopTask(row.id)
+              .then((res) => {
+                if (res.code == 200) {
+                  message.success("停止成功");
+                } else {
+                  message.warning("停止失败");
+                  console.log(res);
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+                message.error("停止失败");
+              });
+          } else {
+            deployTask(row.id)
+              .then((res) => {
+                if (res.code == 200) {
+                  message.success("部署成功");
+                } else {
+                  message.error("部署失败");
+                  console.log(res);
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+                message.error("部署失败");
+              });
+          }
         },
         showModal(row) {
           showDetail.value = true;
@@ -361,6 +405,7 @@ export default defineComponent({
       hljs,
       taskJson,
       taskName,
+      loading,
     };
   },
 });

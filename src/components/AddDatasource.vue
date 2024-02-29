@@ -31,6 +31,9 @@
         <n-form-item label="Host: " path="hostValue">
           <n-input v-model:value="model.hostValue" placeholder="地址" />
         </n-form-item>
+        <n-form-item label="Port: " path="portValue">
+          <n-input v-model:value="model.portValue" placeholder="端口" />
+        </n-form-item>
         <n-form-item label="User: " path="userValue">
           <n-input v-model:value="model.userValue" placeholder="用户名" />
         </n-form-item>
@@ -132,6 +135,7 @@ export default defineComponent({
       model: ref({
         selectValue: null,
         hostValue: null,
+        portValue: null,
         userValue: null,
         pdValue: null,
         dbValue: null,

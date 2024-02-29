@@ -1,12 +1,40 @@
 import Mock from "mockjs";
 
+// 创建/编辑 任务
+Mock.mock("/task/upsert", "post", (option) => {
+  return {
+    code: 200,
+    data: 1000,
+  };
+});
+
+// 部署任务
+Mock.mock(/\/task\/deploy/, "post", (id) => {
+  return {
+    code: 200,
+    data: true,
+  };
+});
+
+// 停止任务
+Mock.mock(/\/task\/stop/, "post", (id) => {
+  return {
+    code: 200,
+    data: true,
+  };
+});
+
 // 查询任务表单
 Mock.mock(/\/task\/detail/, "get", (id) => {
   return {
     code: 200,
     data: {
+      jobId: 100,
       jobType: "STREAMING",
       jobName: "回显任务",
+      envProp: {
+        ckpInterval: 5000,
+      },
       sourceId: 1,
       sourceProp: {
         exactlyOnce: "true",

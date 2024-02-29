@@ -51,6 +51,17 @@
                       </n-form-item-gi>
                       <n-form-item-gi
                         :span="12"
+                        label="ckpInterval: "
+                        path="ckpInterval"
+                      >
+                        <n-input-number
+                          v-model:value="model.envProp.ckpInterval"
+                          step="1000"
+                          clearable
+                        />
+                      </n-form-item-gi>
+                      <n-form-item-gi
+                        :span="12"
                         label="source: "
                         path="sourceId"
                       >
@@ -120,6 +131,18 @@
                           v-model:value="model.sourceProp.exactlyOnce"
                           :options="options"
                           default-value="true"
+                        />
+                      </n-form-item-gi>
+                      <n-form-item-gi
+                        :span="12"
+                        label="primary keys: "
+                        path="primaryKeys"
+                        v-if="sourceType == 'PG'"
+                      >
+                        <n-input
+                          v-model:value="model.sourceProp.primaryKeys"
+                          type="text"
+                          placeholder="主键"
                         />
                       </n-form-item-gi>
                     </n-grid>
@@ -261,7 +284,7 @@ import { CancelOutlined, InputRound } from "@vicons/material";
 import { ApartmentOutlined } from "@vicons/antd";
 import { GroupResource } from "@vicons/carbon";
 import { queryDatasource } from "../api/common";
-import { getTaskDetailById } from "../api/api";
+import { getTaskDetailById, upsertTask } from "../api/api";
 
 export default defineComponent({
   components: {
@@ -277,8 +300,12 @@ export default defineComponent({
     const sourceType = ref(null);
     const sinkType = ref(null);
     const formInitValue = {
+      jobId: null,
       jobType: "STREAMING",
       jobName: null,
+      envProp: {
+        ckpInterval: 5000,
+      },
       sourceId: null,
       sourceProp: {
         exactlyOnce: "true",
@@ -294,6 +321,9 @@ export default defineComponent({
     const formData = ref({ ...formInitValue });
     const resetForm = () => {
       formData.value = formInitValue;
+      formData.value.envProp = {
+        ckpInterval: 5000,
+      };
       formData.value.sourceProp = {
         exactlyOnce: "true",
       };
@@ -341,10 +371,22 @@ export default defineComponent({
     };
     const submit = () => {
       // TODO: 提交任务接口
-      console.log("submit");
-      emit("reload");
+      const fdata = JSON.stringify(formData.value, null, 2);
+      upsertTask(fdata)
+        .then((res) => {
+          console.log(res);
 
-      maskClick();
+          if (res.code == 200) {
+            message.success("提交成功");
+            emit("reload");
+            maskClick();
+          } else {
+            message.error("提交失败");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     };
 
     const updateSource = (value, option) => {
