@@ -22,6 +22,26 @@
         </n-col>
       </n-row>
     </n-card>
+    <n-grid :x-gap="16" :y-gap="16" responsive="screen" item-responsive>
+      <n-gi span="24 s:24 m:12">
+        <n-card :bordered="false" class="rd-8px shadow-sm">
+          <n-card :bordered="false" class="rd-8px shadow-sm">
+            <div class="h-360px overflow-hidden">LineChart</div>
+          </n-card>
+        </n-card>
+      </n-gi>
+      <n-gi span="24 s:24 m:12">
+        <n-card :bordered="false" class="rd-8px shadow-sm">
+          <n-card :bordered="false" class="rd-8px shadow-sm">
+            <div class="h-360px overflow-hidden">PieChart</div>
+          </n-card>
+        </n-card>
+      </n-gi>
+    </n-grid>
+    <!-- <n-grid :x-gap="16" :y-gap="16" responsive="screen" item-responsive>
+      <n-gi span="24 s:24 m:14"> ProjectNews </n-gi>
+      <n-gi span="24 s:24 m:10"> CreativityBanner </n-gi>
+    </n-grid> -->
   </n-space>
 </template>
 
