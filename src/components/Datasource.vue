@@ -24,15 +24,17 @@
       :bordered="true"
       :max-height="tableHeight"
       :min-height="tableHeight"
+      :loading="loading"
       size="small"
+      remote
     />
   </n-space>
   <!-- 新增数据源 -->
-  <AddDatasource ref="addSource" @update:show="activate" />
+  <AddDatasource ref="addSource" @update:show="activate" @reload="reload" />
 </template>
 
-<script>
-import { h, defineComponent } from "vue";
+<script setup>
+import { h, defineComponent, onMounted, nextTick } from "vue";
 import AddDatasource from "./AddDatasource.vue";
 import { AppstoreAddOutlined } from "@vicons/antd";
 import { getDatasource } from "../api/api";
@@ -53,13 +55,13 @@ const createColumns = ({ play }) => {
   return [
     {
       title: "序号",
-      key: "no",
+      key: "id",
       width: 100,
       maxWidth: 100,
     },
     {
       title: "名称",
-      key: "title",
+      key: "name",
       resizable: true,
     },
     {
@@ -88,6 +90,10 @@ const createColumns = ({ play }) => {
         );
       },
     },
+    {
+      title: "创建人",
+      key: "creator",
+    },
     // {
     //   title: "操作",
     //   key: "actions",
@@ -108,52 +114,49 @@ const createColumns = ({ play }) => {
   ];
 };
 
-export default defineComponent({
-  components: {
-    AppstoreAddOutlined,
-    AddDatasource,
-  },
-  setup() {
-    let tableHeight = window.innerHeight - 240;
-    const message = useMessage();
-    const addSource = ref(false);
-    const activate = (show) => {
-      const { active } = addSource.value;
-      addSource.value.active = show;
-    };
+const loading = ref(true);
+let tableHeight = window.innerHeight - 240;
+const message = useMessage();
+const addSource = ref(null);
+const activate = (show) => {
+  addSource.value.active = show;
+};
 
-    const data = reactive([]);
+const data = reactive([]);
 
-    onBeforeMount(() => {
-      getDatasource()
-        .then((res) => {
-          res.data.forEach((v, i) => {
-            data.push({
-              no: v.id,
-              title: v.name,
-              address: v.address,
-              type: v.type,
-              database: v.database,
-            });
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+const reload = () => {
+  loading.value = true;
+  nextTick(() => {
+    getDatasource()
+      .then((res) => {
+        loading.value = true;
+        data.length = 0;
+        Object.assign(data, res.data);
+        loading.value = false;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+};
+
+onMounted(() => {
+  getDatasource()
+    .then((res) => {
+      loading.value = true;
+      Object.assign(data, res.data);
+      loading.value = false;
+    })
+    .catch((error) => {
+      console.error(error);
     });
+});
 
-    return {
-      data,
-      columns: createColumns({
-        play(row) {
-          message.info(`Play ${row.title}`);
-        },
-      }),
-      pagination: false,
-      activate,
-      addSource,
-      tableHeight,
-    };
+const columns = createColumns({
+  play(row) {
+    message.info(`Play ${row.title}`);
   },
 });
+
+const pagination = ref(false);
 </script>

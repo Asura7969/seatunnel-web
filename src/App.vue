@@ -91,8 +91,6 @@ function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }
 
-const currentKey = "";
-
 const menuOptions = routes.map((c) => {
   return {
     label: () =>

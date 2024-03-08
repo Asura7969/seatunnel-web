@@ -7,7 +7,12 @@
     :on-mask-click="maskClick"
   >
     <n-drawer-content title="新增任务">
-      <n-tabs type="segment" animated>
+      <n-tabs
+        type="segment"
+        animated
+        :default-value="choose"
+        @update:value="updateChoose"
+      >
         <n-tab-pane name="template" tab="模板">
           <n-form
             ref="formRef"
@@ -75,6 +80,18 @@
                       </n-form-item-gi>
                       <n-form-item-gi
                         :span="12"
+                        label="enable-2pc: "
+                        path="startup mode"
+                        v-if="sourceType == 'MYSQL' || sourceType == 'PG'"
+                      >
+                        <n-select
+                          v-model:value="model.sourceProp.startupMode"
+                          :options="startupModeOptions"
+                          default-value="INITIAL"
+                        />
+                      </n-form-item-gi>
+                      <n-form-item-gi
+                        :span="12"
                         label="table: "
                         path="table"
                         v-if="sourceType == 'MYSQL' || sourceType == 'PG'"
@@ -91,10 +108,11 @@
                         path="serverId"
                         v-if="sourceType == 'MYSQL'"
                       >
-                        <n-input
+                        <n-input-number
                           v-model:value="model.sourceProp.serverId"
-                          type="text"
-                          placeholder="serverId"
+                          min="6500"
+                          max="2148492146"
+                          clearable
                         />
                       </n-form-item-gi>
                       <n-form-item-gi
@@ -214,7 +232,7 @@
                         :span="12"
                         label="enable-2pc: "
                         path="sinkEnable2pc"
-                        v-if="sinkType == 'DORIS' || sinkType == 'STARROCKS'"
+                        v-if="sinkType == 'DORIS'"
                       >
                         <n-select
                           v-model:value="model.sinkProp.sinkEnable2pc"
@@ -232,6 +250,34 @@
                           v-model:value="model.sinkProp.sinkEnableDelete"
                           :options="options"
                           default-value="true"
+                        />
+                      </n-form-item-gi>
+                      <n-form-item-gi
+                        :span="12"
+                        label="max-retries: "
+                        path="maxRetries"
+                        v-if="sinkType == 'STARROCKS'"
+                      >
+                        <n-input-number
+                          v-model:value="model.sinkProp.maxRetries"
+                          clearable
+                          placeholder="max retries"
+                          default-value="3"
+                          style="width: 100%"
+                        />
+                      </n-form-item-gi>
+                      <n-form-item-gi
+                        :span="12"
+                        label="replication-num: "
+                        path="replicationNum"
+                        v-if="sinkType == 'STARROCKS'"
+                      >
+                        <n-input-number
+                          v-model:value="model.sinkProp.replicationNum"
+                          clearable
+                          placeholder="replication num"
+                          default-value="1"
+                          style="width: 100%"
                         />
                       </n-form-item-gi>
                     </n-grid>
@@ -277,8 +323,8 @@
   </n-drawer>
 </template>
 
-<script name="AddTask">
-import { defineComponent } from "vue";
+<script name="AddTask" setup>
+import { ref } from "vue";
 import { AddSquare24Regular, AddSquare20Filled } from "@vicons/fluent";
 import { CancelOutlined, InputRound } from "@vicons/material";
 import { ApartmentOutlined } from "@vicons/antd";
@@ -286,196 +332,209 @@ import { GroupResource } from "@vicons/carbon";
 import { getTaskDetailById, upsertTask, getDatasource } from "../api/api";
 import { chooseIcon } from "../api/common";
 
-export default defineComponent({
-  components: {
-    AddSquare24Regular,
-    CancelOutlined,
-    AddSquare20Filled,
-    GroupResource,
-    ApartmentOutlined,
-    InputRound,
+const emit = defineEmits(["reload"]);
+
+const loading = ref(false);
+const choose = ref("template");
+const message = useMessage();
+const sourceType = ref(null);
+const sinkType = ref(null);
+const formInitValue = {
+  jobId: null,
+  jobType: "STREAMING",
+  jobName: null,
+  envProp: {
+    ckpInterval: 5000,
   },
-  setup(props, { emit }) {
-    const loading = ref(false);
-    const message = useMessage();
-    const sourceType = ref(null);
-    const sinkType = ref(null);
-    const formInitValue = {
-      jobId: null,
-      jobType: "STREAMING",
-      jobName: null,
-      envProp: {
-        ckpInterval: 5000,
-      },
-      sourceId: null,
-      sourceProp: {
-        exactlyOnce: "true",
-      },
-      sinkId: null,
-      transformValue: null,
-      sinkProp: {
-        sinkEnable2pc: "true",
-        sinkEnableDelete: "true",
-      },
-      jsonValue: null,
-    };
-    const formData = ref({ ...formInitValue });
-    const resetForm = () => {
-      formData.value = formInitValue;
-      formData.value.envProp = {
-        ckpInterval: 5000,
-      };
-      formData.value.sourceProp = {
-        exactlyOnce: "true",
-      };
-      formData.value.sinkProp = {
-        sinkEnable2pc: "true",
-        sinkEnableDelete: "true",
-      };
-      sourceType.value = null;
-      sinkType.value = null;
-    };
+  sourceId: null,
+  sourceProp: {
+    exactlyOnce: "true",
+    startupMode: "INITIAL",
+  },
+  sinkId: null,
+  transformValue: null,
+  sinkProp: {
+    sinkEnable2pc: "true",
+    sinkEnableDelete: "true",
+    maxRetries: 3,
+    replicationNum: 3,
+  },
+  jsonValue: null,
+};
+const formData = ref({ ...formInitValue });
+const resetForm = () => {
+  formData.value = formInitValue;
+  formData.value.envProp = {
+    ckpInterval: 5000,
+  };
+  formData.value.sourceProp = {
+    exactlyOnce: "true",
+    startupMode: "INITIAL",
+  };
+  formData.value.sinkProp = {
+    sinkEnable2pc: "true",
+    sinkEnableDelete: "true",
+    maxRetries: 3,
+    replicationNum: 3,
+  };
+  sourceType.value = null;
+  sinkType.value = null;
+};
 
-    // 表单回显
-    const queryTaskId = (taskId) => {
-      getTaskDetailById(taskId)
-        .then((result) => {
-          console.log(result.data);
-          formData.value = result.data;
-          updateSource(result.data.sourceId, null);
-          updateSink(result.data.sinkId, null);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
-
-    const generalOptions = ref([]);
-
-    onBeforeMount(() => {
-      getDatasource()
-        .then((res) => {
-          console.log(res);
-          res.data.forEach((v, i) => {
-            generalOptions.value.push({
-              label: v.name,
-              value: v.id,
-              type: v.type,
-              icon: chooseIcon(v.type),
-            });
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+// 表单回显
+const queryTaskId = (taskId) => {
+  getTaskDetailById(taskId)
+    .then((result) => {
+      console.log(result.data);
+      formData.value = result.data;
+      updateSource(result.data.sourceId, null);
+      updateSink(result.data.sinkId, null);
+    })
+    .catch((error) => {
+      console.error(error);
     });
+};
 
-    const formRef = ref(null);
-    const active = ref(false);
-    const placement = ref("right");
+const generalOptions = ref([]);
 
-    const maskClick = (e) => {
-      active.value = false;
-      resetForm();
-    };
-    const submit = () => {
-      // TODO: 提交任务接口
-      const fdata = JSON.stringify(formData.value, null, 2);
-      loading.value = true;
-      upsertTask(fdata)
-        .then((res) => {
-          console.log(res);
-
-          if (res.code == 200) {
-            maskClick();
-            message.success("提交成功");
-          } else {
-            message.error("提交失败");
-          }
-          loading.value = false;
-        })
-        .catch((error) => {
-          console.error(error);
-          loading.value = false;
+onBeforeMount(() => {
+  getDatasource()
+    .then((res) => {
+      console.log(res);
+      res.data.forEach((v, i) => {
+        generalOptions.value.push({
+          label: v.name,
+          value: v.id,
+          type: v.type,
+          icon: chooseIcon(v.type),
         });
-      emit("reload");
-    };
-
-    const updateSource = (value, option) => {
-      const selected = generalOptions.value.filter((o) => o.value == value)[0];
-      sourceType.value = selected.type;
-      // console.log("update option: " + JSON.stringify(option));
-    };
-    const updateSink = (value, option) => {
-      const selected = generalOptions.value.filter((o) => o.value == value)[0];
-      sinkType.value = selected.type;
-    };
-    const railStyle = ({ focused, checked }) => {
-      const style = {};
-      if (checked) {
-        style.background = "#9900e6";
-        if (focused) {
-          style.boxShadow = "0 0 0 2px #9900e640";
-        }
-      } else {
-        style.background = "#2080f0";
-        if (focused) {
-          style.boxShadow = "0 0 0 2px #2080f040";
-        }
-      }
-      return style;
-    };
-
-    return {
-      loading,
-      active,
-      queryTaskId,
-      placement,
-      maskClick,
-      submit,
-      rules: {},
-      formRef,
-      updateSource,
-      updateSink,
-      sourceType,
-      sinkType,
-      model: formData,
-      bodyStyle: {
-        width: "600px",
-        height: "600px",
-      },
-      segmented: {
-        content: "soft",
-        footer: "soft",
-      },
-      railStyle,
-      generalOptions,
-      renderLabel: (option) => {
-        return [option.icon, option.label];
-      },
-      options: [
-        {
-          label: "true",
-          value: "true",
-        },
-        {
-          label: "false",
-          value: "false",
-        },
-      ],
-      jobOptions: [
-        {
-          label: "BATCH",
-          value: "BATCH",
-        },
-        {
-          label: "STREAMING",
-          value: "STREAMING",
-        },
-      ],
-    };
-  },
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
+
+const formRef = ref(null);
+const active = ref(false);
+const placement = ref("right");
+
+const maskClick = (e) => {
+  active.value = false;
+  resetForm();
+};
+
+const submit = () => {
+  // TODO: 提交任务接口
+  loading.value = true;
+  console.log(choose.value);
+  if (choose.value == "template") {
+    formData.value.jsonValue = null;
+  } else {
+    let tmpJsonValue = formData.value.jsonValue;
+    resetForm();
+    formData.value.jsonValue = tmpJsonValue;
+  }
+  const fdata = JSON.stringify(formData.value, null, 2);
+
+  upsertTask(fdata)
+    .then((res) => {
+      console.log(res);
+
+      if (res.code == 200) {
+        maskClick();
+        message.success("提交成功");
+      } else {
+        message.error("提交失败");
+      }
+      loading.value = false;
+    })
+    .catch((error) => {
+      console.error(error);
+      loading.value = false;
+    });
+  emit("reload");
+};
+
+const updateChoose = (value, option) => {
+  choose.value = value;
+};
+
+const updateSource = (value, option) => {
+  const selected = generalOptions.value.filter((o) => o.value == value)[0];
+  sourceType.value = selected.type;
+  // console.log("update option: " + JSON.stringify(option));
+};
+const updateSink = (value, option) => {
+  const selected = generalOptions.value.filter((o) => o.value == value)[0];
+  sinkType.value = selected.type;
+};
+const railStyle = ({ focused, checked }) => {
+  const style = {};
+  if (checked) {
+    style.background = "#9900e6";
+    if (focused) {
+      style.boxShadow = "0 0 0 2px #9900e640";
+    }
+  } else {
+    style.background = "#2080f0";
+    if (focused) {
+      style.boxShadow = "0 0 0 2px #2080f040";
+    }
+  }
+  return style;
+};
+
+const bodyStyle = {
+  width: "600px",
+  height: "600px",
+};
+const segmented = {
+  content: "soft",
+  footer: "soft",
+};
+const model = formData;
+const rules = {};
+
+const renderLabel = (option) => {
+  return [option.icon, option.label];
+};
+const startupModeOptions = [
+  {
+    label: "initial",
+    value: "INITIAL",
+  },
+  {
+    label: "earliest",
+    value: "EARLIEST",
+  },
+  {
+    label: "latest ",
+    value: "LATEST",
+  },
+];
+const options = [
+  {
+    label: "true",
+    value: "true",
+  },
+  {
+    label: "false",
+    value: "false",
+  },
+];
+const jobOptions = [
+  {
+    label: "BATCH",
+    value: "BATCH",
+  },
+  {
+    label: "STREAMING",
+    value: "STREAMING",
+  },
+];
+
+defineExpose({ active });
 </script>
 
 <style scoped lang="scss">

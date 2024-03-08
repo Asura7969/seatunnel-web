@@ -29,6 +29,11 @@ export const getDatasource = function () {
   return req("get", "/datasource/queryAll");
 };
 
+// 创建数据源
+export const addDatasource = function (data) {
+  return req("post", "/datasource/add", data);
+};
+
 export const getTaskList = function (pageNum, pageSize) {
   return req("get", "/task/queryAll", { page: pageNum, pageSize: pageSize });
 };
@@ -56,4 +61,9 @@ export const deployTask = function (id) {
 // 停止任务
 export const stopTask = function (id) {
   return req("post", "/task/stop/" + id);
+};
+
+// 查询任务表单详情
+export const getSysInfo = function () {
+  return req("get", "/sys/systemMonitoringInformation/");
 };

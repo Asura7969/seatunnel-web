@@ -1,7 +1,30 @@
 import Mock from "mockjs";
 
 Mock.setup({
-  timeout: "1000-3000",
+  timeout: "500-1000",
+});
+
+Mock.mock("/sys/systemMonitoringInformation/", "get", () => {
+  return {
+    code: 200,
+    data: {
+      yColumnName: ["001", "002"],
+      physicalMemoryUse: ["15.0317", "14.9896"],
+      physicalMemoryFree: ["0.1683", "0.2104"],
+      heapMemoryUsed: ["0.5882", "1.1"],
+      heapMemoryFree: ["1.4", "0.8862"],
+      loadSystem: ["0.91", "1.33"],
+      runningJobs: 1,
+    },
+  };
+});
+
+// 创建数据源
+Mock.mock("/datasource/add", "post", (option) => {
+  return {
+    code: 200,
+    data: 1000,
+  };
 });
 
 // 创建/编辑 任务
@@ -69,6 +92,7 @@ Mock.mock("/datasource/queryAll", "get", () => {
         type: "DORIS",
         address: "127.0.0.1:15433",
         database: "test",
+        creator: "001",
       },
       {
         id: 1,
@@ -76,6 +100,7 @@ Mock.mock("/datasource/queryAll", "get", () => {
         type: "MYSQL",
         address: "127.0.0.1:3306",
         database: "test",
+        creator: "002",
       },
       {
         id: 3,
@@ -83,6 +108,7 @@ Mock.mock("/datasource/queryAll", "get", () => {
         type: "PG",
         address: "127.0.0.1:8030",
         database: "test",
+        creator: "003",
       },
       {
         id: 4,
@@ -90,6 +116,7 @@ Mock.mock("/datasource/queryAll", "get", () => {
         type: "STARROCKS",
         address: "127.0.0.1:8031",
         database: "test",
+        creator: "004",
       },
     ],
   };
@@ -103,27 +130,35 @@ Mock.mock(/\/task\/queryAll/, "get", (pageNum, pageSize) => {
       list: [
         {
           id: 1,
+          jobId: 1,
           name: "mysql_cdc_to_ds",
           status: "CANCELED",
           createTime: "2024-02-01",
+          lastModifiedBy: "001",
         },
         {
           id: 2,
+          jobId: 2,
           name: "pg_cdc_to_ds",
           status: "RUNNING",
           createTime: "2023-02-01",
+          lastModifiedBy: "002",
         },
         {
           id: 3,
+          jobId: 3,
           name: "mysql_cdc_to_ds",
           status: "CANCELED",
           createTime: "2024-02-01",
+          lastModifiedBy: "003",
         },
         {
           id: 4,
+          jobId: 4,
           name: "mysql_cdc_to_ds",
           status: "RUNNING",
           createTime: "2024-02-01",
+          lastModifiedBy: "004",
         },
       ],
       total: 100,

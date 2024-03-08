@@ -86,8 +86,8 @@
   </n-config-provider>
 </template>
 
-<script>
-import { h, defineComponent, ref, reactive, onMounted, nextTick } from "vue";
+<script setup>
+import { h, ref, reactive, onMounted, nextTick } from "vue";
 import { AppstoreAddOutlined, EditTwotone, ReloadOutlined } from "@vicons/antd";
 import AddTask from "./AddTask.vue";
 import { getTaskList, getTaskJsonById, deployTask, stopTask } from "../api/api";
@@ -204,6 +204,11 @@ const createColumns = ({ deployOrStop, showModal }) => {
       minWidth: 200,
     },
     {
+      title: "lastModifiedBy",
+      key: "lastModifiedBy",
+      minWidth: 200,
+    },
+    {
       title: "操作",
       key: "actions",
       render(row) {
@@ -238,192 +243,151 @@ const createColumns = ({ deployOrStop, showModal }) => {
   ];
 };
 
-export default defineComponent({
-  components: {
-    AppstoreAddOutlined,
-    EditTwotone,
-    AddTask,
-    ReloadOutlined,
-  },
-  setup() {
-    const loading = ref(true);
-    const tableShow = ref(true);
-    let tableHeight = window.innerHeight - 240;
-    const message = useMessage();
-    const addTask = ref(false);
-    const activate = (show) => {
-      const { active } = addTask.value;
-      addTask.value.active = show;
-    };
-    let data = reactive([]);
-    const total = ref(0);
-    const page = ref(1);
-    const pageSize = ref(10);
+const loading = ref(true);
+const tableShow = ref(true);
+let tableHeight = window.innerHeight - 240;
+const message = useMessage();
+const addTask = ref(false);
+const activate = (show) => {
+  const { active } = addTask.value;
+  addTask.value.active = show;
+};
+let data = reactive([]);
+const total = ref(0);
+const page = ref(1);
+const pageSize = ref(10);
 
-    const taskJson = ref(`""`);
+const taskJson = ref(`""`);
 
-    onMounted(() => {
-      getTaskList(1, 20)
-        .then((res) => {
-          loading.value = true;
+onMounted(() => {
+  getTaskList(1, 20)
+    .then((res) => {
+      loading.value = true;
+      res.data.list.forEach((v, i) => {
+        v.key = v.id;
+        v.loading = false;
+      });
+      Object.assign(data, res.data.list);
+
+      total.value = res.total;
+      page.value = res.page;
+      pageSize.value = res.pageSize;
+      loading.value = false;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+const reload = () => {
+  loading.value = true;
+  nextTick(() => {
+    getTaskList(page.value, pageSize.value)
+      .then((res) => {
+        if (res.code == 200) {
+          data.length = 0;
           res.data.list.forEach((v, i) => {
-            data.push({
-              id: v.id,
-              name: v.name,
-              status: v.status,
-              createTime: v.createTime,
-              key: v.id,
-              loading: false,
-            });
+            v.key = v.id;
+            v.loading = false;
           });
-          total.value = res.total;
-          page.value = res.page;
-          pageSize.value = res.pageSize;
-          loading.value = false;
+          Object.assign(data, res.data.list);
+        }
+        loading.value = false;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+};
+
+const showDetail = ref(false);
+const taskName = ref("");
+const checkedRowKeysRef = ref([]);
+
+const selectRow = (keys, rows) => {
+  checkedRowKeysRef.value = [rows[0].id];
+};
+
+const editTask = () => {
+  if (checkedRowKeysRef.value.length === 0) {
+    message.warning("请选择任务");
+  } else {
+    console.log("开始编辑", checkedRowKeysRef.value[0]);
+    activate(true);
+    addTask.value.queryTaskId(checkedRowKeysRef.value[0]);
+  }
+};
+
+const pagination = ref(false);
+const columns = createColumns({
+  deployOrStop(row) {
+    row.loading = true;
+    if (row.status == "RUNNING") {
+      stopTask(row.id)
+        .then((res) => {
+          if (res.code == 200) {
+            message.success("停止成功");
+          } else {
+            message.warning("停止失败");
+            console.log(res);
+          }
+          row.loading = false;
+          row.status = "FINISHED";
         })
         .catch((error) => {
           console.error(error);
+          message.error("停止失败");
         });
-    });
-
-    const reload = () => {
-      loading.value = true;
-      nextTick(() => {
-        getTaskList(page.value, pageSize.value)
-          .then((res) => {
-            if (res.code == 200) {
-              data.length = 0;
-              res.data.list.forEach((v, i) => {
-                data.push({
-                  id: v.id,
-                  name: v.name,
-                  status: v.status,
-                  createTime: v.createTime,
-                  key: v.id,
-                  loading: false,
-                });
-              });
-            }
-            loading.value = false;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      });
-    };
-
-    const showDetail = ref(false);
-    const taskName = ref("");
-    const checkedRowKeysRef = ref([]);
-
-    const selectRow = (keys, rows) => {
-      checkedRowKeysRef.value = [rows[0].id];
-    };
-
-    const editTask = () => {
-      if (checkedRowKeysRef.value.length === 0) {
-        message.warning("请选择任务");
-      } else {
-        console.log("开始编辑", checkedRowKeysRef.value[0]);
-        activate(true);
-        addTask.value.queryTaskId(checkedRowKeysRef.value[0]);
-      }
-    };
-
-    return {
-      tableShow,
-      checkedRowKeys: checkedRowKeysRef,
-      selectRow,
-      editTask,
-      data,
-      columns: createColumns({
-        deployOrStop(row) {
-          row.loading = true;
-          if (row.status == "RUNNING") {
-            stopTask(row.id)
-              .then((res) => {
-                if (res.code == 200) {
-                  message.success("停止成功");
-                } else {
-                  message.warning("停止失败");
-                  console.log(res);
-                }
-                row.loading = false;
-                row.status = "FINISHED";
-              })
-              .catch((error) => {
-                console.error(error);
-                message.error("停止失败");
-              });
+    } else {
+      deployTask(row.id)
+        .then((res) => {
+          if (res.code == 200) {
+            message.success("部署成功");
           } else {
-            deployTask(row.id)
-              .then((res) => {
-                if (res.code == 200) {
-                  message.success("部署成功");
-                } else {
-                  message.error("部署失败");
-                  console.log(res);
-                }
-                row.loading = false;
-                row.status = "RUNNING";
-              })
-              .catch((error) => {
-                console.error(error);
-                message.error("部署失败");
-              });
-          }
-        },
-        showModal(row) {
-          showDetail.value = true;
-          getTaskJsonById(row)
-            .then((res) => {
-              taskJson.value = JSON.stringify(res.data, null, 2);
-              taskName.value = row.name;
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        },
-      }),
-      pagination: false,
-      activate,
-      addTask,
-      reload,
-      tableHeight,
-      page,
-      pageSize,
-      total,
-      showDetail,
-      hljs,
-      taskJson,
-      taskName,
-      loading,
-      updatePage(pageNum) {
-        let count = typeof pageSize.value == "undefined" ? 20 : pageSize.value;
-        loading.value = true;
-        getTaskList(pageNum, count)
-          .then((res) => {
-            data.length = 0;
+            message.error("部署失败");
             console.log(res);
-            res.data.list.forEach((v, i) => {
-              data.push({
-                id: v.id,
-                name: v.name,
-                status: v.status,
-                createTime: v.createTime,
-                key: v.id,
-                loading: false,
-              });
-            });
-            loading.value = false;
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      },
-    };
+          }
+          row.loading = false;
+          row.status = "RUNNING";
+        })
+        .catch((error) => {
+          console.error(error);
+          message.error("部署失败");
+        });
+    }
+  },
+  showModal(row) {
+    showDetail.value = true;
+    getTaskJsonById(row)
+      .then((res) => {
+        taskJson.value = JSON.stringify(res.data, null, 2);
+        taskName.value = row.name;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   },
 });
+const updatePage = (pageNum) => {
+  let count = typeof pageSize.value == "undefined" ? 20 : pageSize.value;
+  loading.value = true;
+  getTaskList(pageNum, count)
+    .then((res) => {
+      data.length = 0;
+      console.log(res);
+      res.data.list.forEach((v, i) => {
+        v.key = v.id;
+        v.loading = false;
+      });
+      Object.assign(data, res.data.list);
+      loading.value = false;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+const checkedRowKeys = checkedRowKeysRef;
 </script>
 
 <style scoped lang="scss"></style>
