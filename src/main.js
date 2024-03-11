@@ -7,5 +7,6 @@ import "vfonts/FiraCode.css";
 import "./mock/index";
 // import ECharts from "vue-echarts";
 // import "echarts";
+import "uno.css";
 
 createApp(App).use(router).mount("#app");

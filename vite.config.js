@@ -1,4 +1,6 @@
 import { defineConfig } from "vite";
+import UnoCSS from "unocss/vite";
+import { presetUno, presetAttributify, presetIcons } from "unocss";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
@@ -15,6 +17,10 @@ export default defineConfig({
           isCustomElement: (tag) => [""].includes(tag),
         },
       },
+    }),
+    UnoCSS({
+      // 使用Unocss
+      presets: [presetUno(), presetAttributify(), presetIcons()],
     }),
     VueSetupExtend(),
     viteMockServe({

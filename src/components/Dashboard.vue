@@ -1,6 +1,6 @@
 <template>
   <n-space vertical :size="16">
-    <n-card :bordered="true" :hoverable="true" :embedded="true">
+    <n-card :bordered="true" class="rd-8px shadow">
       <n-row>
         <n-col :span="12">
           <n-statistic label="集群节点" :value="activeNodeNum">
@@ -19,21 +19,17 @@
     </n-card>
     <n-grid :x-gap="16" :y-gap="16" responsive="screen" item-responsive>
       <n-gi span="24 s:24 m:12">
-        <n-card :bordered="false" class="rd-8px shadow-sm">
-          <n-card :bordered="false" class="rd-8px shadow-sm">
-            <div class="h-360px overflow-hidden">
-              <v-chart class="chart" :option="optionPhysicalMemory" />
-            </div>
-          </n-card>
+        <n-card :bordered="true" class="rd-8px shadow">
+          <div class="h-400px overflow-hidden">
+            <v-chart :option="optionPhysicalMemory" />
+          </div>
         </n-card>
       </n-gi>
       <n-gi span="24 s:24 m:12">
-        <n-card :bordered="false" class="rd-8px shadow-sm">
-          <n-card :bordered="false" class="rd-8px shadow-sm">
-            <div class="h-360px overflow-hidden">
-              <v-chart class="chart" :option="optionOther" />
-            </div>
-          </n-card>
+        <n-card :bordered="true" class="rd-8px shadow">
+          <div class="h-400px overflow-hidden">
+            <v-chart :option="optionOther" />
+          </div>
         </n-card>
       </n-gi>
     </n-grid>
@@ -197,9 +193,4 @@ const optionPhysicalMemory = reactive({
 });
 </script>
 
-<style scoped>
-.chart {
-  width: 600px;
-  height: 400px;
-}
-</style>
+<style scoped></style>

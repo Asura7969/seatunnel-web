@@ -32,6 +32,7 @@ Mock.mock("/task/upsert", "post", (option) => {
   return {
     code: 200,
     data: 1000,
+    msg: "OK",
   };
 });
 
@@ -66,7 +67,7 @@ Mock.mock(/\/task\/detail/, "get", (id) => {
       sourceProp: {
         exactlyOnce: "true",
         tableName: "asdasd",
-        serverId: "56756",
+        serverId: 56756,
       },
       sinkId: 2,
       transformValue: null,

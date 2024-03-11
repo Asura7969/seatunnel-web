@@ -333,7 +333,6 @@ import { getTaskDetailById, upsertTask, getDatasource } from "../api/api";
 import { chooseIcon } from "../api/common";
 
 const emit = defineEmits(["reload"]);
-
 const loading = ref(false);
 const choose = ref("template");
 const message = useMessage();
@@ -445,7 +444,7 @@ const submit = () => {
         maskClick();
         message.success("提交成功");
       } else {
-        message.error("提交失败");
+        message.error(res.msg);
       }
       loading.value = false;
     })
@@ -534,7 +533,7 @@ const jobOptions = [
   },
 ];
 
-defineExpose({ active });
+defineExpose({ active, queryTaskId });
 </script>
 
 <style scoped lang="scss">

@@ -20,10 +20,10 @@
           maxWidth: '640px',
         }"
       >
-        <n-form-item label="Name: " path="nameValue">
+        <n-form-item label="Name: " path="name">
           <n-input v-model:value="model.name" placeholder="名称" />
         </n-form-item>
-        <n-form-item label="Type: " path="selectValue">
+        <n-form-item label="Type: " path="type">
           <n-select
             v-model:value="model.type"
             placeholder="选择数据源"
@@ -31,39 +31,39 @@
             :options="generalOptions"
           />
         </n-form-item>
-        <n-form-item label="Host: " path="hostValue">
+        <n-form-item label="Host: " path="address">
           <n-input v-model:value="model.address" placeholder="地址" />
         </n-form-item>
         <n-form-item
-          :label="model.type == 'Starrocks' ? 'Query Port' : 'Port'"
-          path="portValue"
+          :label="model.type == 'STARROCKS' ? 'Query Port' : 'Port'"
+          path="port"
         >
           <n-input-number
             v-model:value="model.port"
             clearable
-            :placeholder="model.type == 'Starrocks' ? 'Query端口' : '端口'"
+            :placeholder="model.type == 'STARROCKS' ? 'Query端口' : '端口'"
             style="width: 100%"
           />
         </n-form-item>
         <n-form-item
-          :label="model.type == 'Starrocks' ? 'Http Port' : 'Port'"
-          v-if="model.type == 'Starrocks'"
-          path="portValue"
+          :label="model.type == 'STARROCKS' ? 'Http Port' : 'Port'"
+          v-if="model.type == 'STARROCKS'"
+          path="httpPortValue"
         >
           <n-input-number
             v-model:value="model.other.httpPortValue"
             clearable
-            :placeholder="model.type == 'Starrocks' ? 'Http端口' : '端口'"
+            :placeholder="model.type == 'STARROCKS' ? 'Http端口' : '端口'"
             style="width: 100%"
           />
         </n-form-item>
-        <n-form-item label="User: " path="userValue">
+        <n-form-item label="User: " path="user">
           <n-input v-model:value="model.user" placeholder="用户名" />
         </n-form-item>
-        <n-form-item label="Passwd: " path="pdValue">
+        <n-form-item label="Passwd: " path="passwd">
           <n-input v-model:value="model.passwd" placeholder="密码" />
         </n-form-item>
-        <n-form-item label="Database: " path="dbValue">
+        <n-form-item label="Database: " path="database">
           <n-input v-model:value="model.database" placeholder="数据库" />
         </n-form-item>
       </n-form>
@@ -150,29 +150,36 @@ const resetForm = () => {
   formData.value = formInitValue;
   formData.value.other.httpPortValue = null;
 };
+
 const submit = () => {
-  loading.value = true;
-  const fdata = JSON.stringify(formData.value, null, 2);
-  console.log(fdata);
-  addDatasource(fdata)
-    .then((res) => {
-      console.log(res);
+  formRef.value?.validate((errors) => {
+    if (!errors) {
+      loading.value = true;
+      const fdata = JSON.stringify(formData.value, null, 2);
+      console.log(fdata);
+      addDatasource(fdata)
+        .then((res) => {
+          console.log(res);
 
-      if (res.code == 200) {
-        maskClick();
-        resetForm();
-        message.success("提交成功");
-      } else {
-        message.error("提交失败");
-      }
-      loading.value = false;
-    })
-    .catch((error) => {
-      console.error(error);
-      loading.value = false;
-    });
+          if (res.code == 200) {
+            maskClick();
+            resetForm();
+            message.success("提交成功");
+          } else {
+            message.error(res.msg);
+          }
+          loading.value = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          loading.value = false;
+        });
 
-  emit("reload");
+      emit("reload");
+    } else {
+      message.error(errors[0][0].message);
+    }
+  });
 };
 const update = (s) => {
   console.log("show: " + s);
@@ -183,7 +190,64 @@ const renderLabel = (option) => {
 };
 const size = ref("small");
 const model = formData;
-const rules = {};
+const rules = {
+  name: [
+    {
+      required: true,
+      message: "需要名称",
+      trigger: "blur",
+    },
+  ],
+  type: [
+    {
+      required: true,
+      message: "需要指定类型",
+      trigger: "blur",
+    },
+  ],
+  address: [
+    {
+      required: true,
+      message: "需要host",
+      trigger: "blur",
+    },
+  ],
+  port: [
+    {
+      required: true,
+      validator(rule, value) {
+        if (!value) {
+          return new Error("需要端口");
+        } else if (!/^\d*$/.test(value)) {
+          return new Error("年龄应该为整数");
+        }
+        return true;
+      },
+      trigger: ["input", "blur"],
+    },
+  ],
+  user: [
+    {
+      required: true,
+      message: "需要用户名",
+      trigger: "blur",
+    },
+  ],
+  passwd: [
+    {
+      required: true,
+      message: "需要密码",
+      trigger: "blur",
+    },
+  ],
+  database: [
+    {
+      required: true,
+      message: "需要指定数据库",
+      trigger: "blur",
+    },
+  ],
+};
 
 defineExpose({ active });
 </script>
