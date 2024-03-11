@@ -1,12 +1,13 @@
 <template>
-  <n-space vertical :size="12">
-    <n-card :bordered="true" class="rd-8px shadow">
+  <n-card :bordered="true" class="rd-8px shadow">
+    <n-space vertical :size="12">
       <n-space justify="end">
         <n-button-group>
           <n-button
             ghost
             color="#8a2be2"
             style="margin: auto"
+            size="small"
             @click="activate(true)"
           >
             <template #icon>
@@ -18,9 +19,6 @@
           </n-button>
         </n-button-group>
       </n-space>
-    </n-card>
-
-    <n-card :bordered="true" class="rd-8px shadow">
       <n-data-table
         :columns="columns"
         :data="data"
@@ -32,8 +30,8 @@
         size="small"
         remote
       />
-    </n-card>
-  </n-space>
+    </n-space>
+  </n-card>
   <!-- 新增数据源 -->
   <AddDatasource ref="addSource" @update:show="activate" @reload="reload" />
 </template>
@@ -120,7 +118,7 @@ const createColumns = ({ play }) => {
 };
 
 const loading = ref(true);
-let tableHeight = window.innerHeight - 290;
+let tableHeight = window.innerHeight - 230;
 const message = useMessage();
 const addSource = ref(null);
 const activate = (show) => {

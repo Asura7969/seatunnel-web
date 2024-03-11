@@ -2,70 +2,77 @@
   <n-config-provider :hljs="hljs">
     <n-space vertical :size="12">
       <n-card :bordered="true" class="rd-8px shadow">
-        <n-space justify="end">
-          <n-button ghost color="#900C3F" style="margin: auto" @click="reload">
-            <template #icon>
-              <n-icon>
-                <ReloadOutlined />
-              </n-icon>
-            </template>
-            刷新
-          </n-button>
-          <n-button
-            ghost
-            color="#8a2be2"
-            style="margin: auto"
-            @click="activate(true)"
-          >
-            <template #icon>
-              <n-icon>
-                <AppstoreAddOutlined />
-              </n-icon>
-            </template>
-            新增
-          </n-button>
-          <n-button
-            ghost
-            color="#339BFF"
-            style="margin: auto"
-            @click="editTask()"
-          >
-            <template #icon>
-              <n-icon>
-                <EditTwotone />
-              </n-icon>
-            </template>
-            编辑
-          </n-button>
-        </n-space>
-      </n-card>
-      <n-card :bordered="true" class="rd-8px shadow">
-        <n-data-table
-          v-if="tableShow"
-          remote
-          v-model:checked-row-keys="checkedRowKeys"
-          @update:checked-row-keys="selectRow"
-          :columns="columns"
-          :data="data"
-          :pagination="pagination"
-          :bordered="true"
-          :max-height="tableHeight"
-          :min-height="tableHeight"
-          :loading="loading"
-          size="small"
-        />
-
-        <n-space justify="end">
-          <n-pagination
-            v-model:page="page"
-            v-model:page-size="pageSize"
-            :item-count="100"
-            :default-page-size="20"
-            :default-page="1"
-            show-size-picker
-            :page-sizes="[20, 50, 100]"
-            @update:page="updatePage"
+        <n-space vertical>
+          <n-space justify="end">
+            <n-button
+              ghost
+              color="#900C3F"
+              style="margin: auto"
+              @click="reload"
+              size="small"
+            >
+              <template #icon>
+                <n-icon>
+                  <ReloadOutlined />
+                </n-icon>
+              </template>
+              刷新
+            </n-button>
+            <n-button
+              ghost
+              color="#8a2be2"
+              style="margin: auto"
+              size="small"
+              @click="activate(true)"
+            >
+              <template #icon>
+                <n-icon>
+                  <AppstoreAddOutlined />
+                </n-icon>
+              </template>
+              新增
+            </n-button>
+            <n-button
+              ghost
+              color="#339BFF"
+              style="margin: auto"
+              size="small"
+              @click="editTask()"
+            >
+              <template #icon>
+                <n-icon>
+                  <EditTwotone />
+                </n-icon>
+              </template>
+              编辑
+            </n-button>
+          </n-space>
+          <n-data-table
+            v-if="tableShow"
+            remote
+            v-model:checked-row-keys="checkedRowKeys"
+            @update:checked-row-keys="selectRow"
+            :columns="columns"
+            :data="data"
+            :pagination="pagination"
+            :bordered="true"
+            :max-height="tableHeight"
+            :min-height="tableHeight"
+            :loading="loading"
+            size="small"
           />
+          <n-space justify="end">
+            <n-pagination
+              v-model:page="page"
+              v-model:page-size="pageSize"
+              :item-count="100"
+              :default-page-size="20"
+              :default-page="1"
+              show-size-picker
+              :page-sizes="[20, 50, 100]"
+              @update:page="updatePage"
+            />
+          </n-space>
         </n-space>
       </n-card>
     </n-space>
@@ -249,7 +256,7 @@ const createColumns = ({ deployOrStop, showModal }) => {
 
 const loading = ref(true);
 const tableShow = ref(true);
-let tableHeight = window.innerHeight - 290;
+let tableHeight = window.innerHeight - 230;
 const message = useMessage();
 const addTask = ref(false);
 const activate = (show) => {
