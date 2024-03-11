@@ -64,10 +64,7 @@
             children-field="children"
           />
         </n-layout-sider>
-        <n-layout-content
-          content-style="padding: 24px;"
-          :native-scrollbar="false"
-        >
+        <n-layout-content :content-style="bgStyle" :native-scrollbar="false">
           <n-message-provider>
             <router-view></router-view>
           </n-message-provider>
@@ -123,12 +120,29 @@ export default defineComponent({
       return theme.value !== null && theme.value.name === "dark";
     };
 
+    // height: 100%; padding: 24px; background-color: #F6F5F5;
+    const bgStyle = ref(null);
+
     const themeIcon = () => {
       let v_node = isDarkTheme() ? Sun : WeatherMoon20Filled;
       return h(NIcon, null, {
         default: () => h(v_node),
       });
     };
+
+    watchEffect(() => {
+      if (isDarkTheme()) {
+        console.log("dark");
+        bgStyle.value = "height: 100%; padding: 24px;";
+      } else {
+        bgStyle.value =
+          "height: 100%; padding: 24px; background-color: #F6F5F5;";
+      }
+    });
+
+    onMounted(() => {
+      bgStyle.value = "height: 100%; padding: 24px; background-color: #F6F5F5;";
+    });
 
     const clickTheme = () => {
       if (isDarkTheme()) {
@@ -153,6 +167,7 @@ export default defineComponent({
       themeIcon,
       clickTheme,
       screenFull,
+      bgStyle,
     };
   },
   methods: {
@@ -185,5 +200,8 @@ export default defineComponent({
   ::v-deep(.n-layout-toggle-button) {
     top: 20%;
   }
+}
+.n-scrollbar-container .n-scrollbar-content {
+  background-color: rgb(227, 242, 249);
 }
 </style>
