@@ -133,15 +133,15 @@ export default defineComponent({
     watchEffect(() => {
       if (isDarkTheme()) {
         console.log("dark");
-        bgStyle.value = "height: 100%; padding: 24px;";
+        bgStyle.value = "height: 100%; padding: 15px;";
       } else {
         bgStyle.value =
-          "height: 100%; padding: 24px; background-color: #F6F5F5;";
+          "height: 100%; padding: 15px; background-color: #F6F5F5;";
       }
     });
 
     onMounted(() => {
-      bgStyle.value = "height: 100%; padding: 24px; background-color: #F6F5F5;";
+      bgStyle.value = "height: 100%; padding: 15px; background-color: #F6F5F5;";
     });
 
     const clickTheme = () => {

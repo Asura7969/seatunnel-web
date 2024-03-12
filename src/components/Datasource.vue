@@ -1,5 +1,5 @@
 <template>
-  <n-card :bordered="true" class="rd-8px shadow">
+  <n-card :bordered="true" class="rd-8px shadow" style="height: 100%">
     <n-space vertical :size="12">
       <n-space justify="end">
         <n-button-group>

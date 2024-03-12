@@ -1,7 +1,7 @@
 <template>
   <n-config-provider :hljs="hljs">
     <n-space vertical :size="12">
-      <n-card :bordered="true" class="rd-8px shadow">
+      <n-card :bordered="true" class="rd-8px shadow" style="height: 10%">
         <n-space vertical>
           <n-space justify="end">
             <n-button
@@ -256,7 +256,7 @@ const createColumns = ({ deployOrStop, showModal }) => {
 
 const loading = ref(true);
 const tableShow = ref(true);
-let tableHeight = window.innerHeight - 230;
+let tableHeight = window.innerHeight - 250;
 const message = useMessage();
 const addTask = ref(false);
 const activate = (show) => {
