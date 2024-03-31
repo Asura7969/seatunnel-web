@@ -7,11 +7,10 @@ import { DeveloperBoardSharp } from '@vicons/material'
 
 
 export const routes = [
-  { path: '/', name: 'dashboard', icon: HeartRateMonitor, component: Dashboard },
-  { path: '/datasource', name: 'datasource', icon: Database, component: () => import('../components/Datasource.vue'), },
-  { path: '/task', name: 'task', icon: DeveloperBoard20Regular, component: () => import('../components/Task.vue'), },
-  { path: '/develop', name: 'develop', icon: DeveloperBoardSharp, component: () => import('../components/Develop.vue'), },
-
+  { path: '/', name: 'dashboard', icon: HeartRateMonitor, component: Dashboard, lable: 'integration' },
+  { path: '/datasource', name: 'datasource', icon: Database, component: () => import('../components/Datasource.vue'), lable: 'integration'},
+  { path: '/task', name: 'task', icon: DeveloperBoard20Regular, component: () => import('../components/Task.vue'), lable: 'integration'},
+  { path: '/develop', name: 'develop', icon: DeveloperBoardSharp, component: () => import('../components/Develop.vue'), lable: 'development'},
 ]
 
 const router = VueRouter.createRouter({

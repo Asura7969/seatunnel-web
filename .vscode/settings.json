@@ -1,6 +1,6 @@
 {
   "debug.allowBreakpointsEverywhere": true,
-  "workbench.colorTheme": "Default Dark+",
+  "workbench.colorTheme": "Theme Flat",
   "workbench.editor.empty.hint": "hidden",
   "eslint.codeActionsOnSave.rules": null,
   "eslint.format.enable": true,

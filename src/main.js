@@ -7,6 +7,8 @@ import "vfonts/FiraCode.css";
 import "./mock/index";
 // import ECharts from "vue-echarts";
 // import "echarts";
+import {createPinia} from 'pinia'
 import "uno.css";
 
-createApp(App).use(router).mount("#app");
+const pinia = createPinia()
+createApp(App).use(router).use(pinia).mount("#app");

@@ -17,6 +17,14 @@
             <h2>SeaTunnel</h2>
           </n-gradient-text>
         </n-space>
+        <n-space :size="20" align="center" style="line-height: 1">
+          <n-menu
+            v-model:value="headActiveKey"
+            mode="horizontal"
+            :options="headMenuOptions"
+            responsive
+          />
+        </n-space>
         <n-space class="tip" :size="20" align="center" style="line-height: 1">
           <n-popover trigger="hover">
             <template #trigger>
@@ -58,7 +66,6 @@
             :collapsed-width="60"
             :collapsed-icon-size="22"
             :options="menuOptions"
-            :inverted="false"
             key-field="key"
             label-field="label"
             children-field="children"
@@ -88,22 +95,38 @@ function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }
 
-const menuOptions = routes.map((c) => {
-  return {
+const headMenuOptions = [
+  {
     label: () =>
       h(
         RouterLink,
         {
           to: {
-            name: c.name,
+            name: "dashboard",
           },
         },
-        { default: () => c.name }
+        { default: () => "数据集成" }
       ),
-    key: c.name,
-    icon: renderIcon(c.icon),
-  };
-});
+    key: "integration",
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            name: "develop",
+          },
+        },
+        { default: () => "数据开发" }
+      ),
+    key: "development",
+  },
+  {
+    label: "服务",
+    key: "service",
+  },
+];
 
 export default defineComponent({
   components: {
@@ -115,6 +138,7 @@ export default defineComponent({
     const containerRef = ref(void 0);
     const theme = ref(null);
     const expandedKeys = [];
+    const headActiveKey = ref("integration");
 
     const isDarkTheme = () => {
       return theme.value !== null && theme.value.name === "dark";
@@ -130,6 +154,46 @@ export default defineComponent({
       });
     };
 
+    const menuOptions = ref(
+      routes.map((c) => {
+        return {
+          label: () =>
+            h(
+              RouterLink,
+              {
+                to: {
+                  name: c.name,
+                },
+              },
+              { default: () => c.name }
+            ),
+          key: c.name,
+          icon: renderIcon(c.icon),
+        };
+      })
+    );
+
+    function selectedMenu(key) {
+      menuOptions.value = routes
+        .filter((c) => c.lable == key)
+        .map((c) => {
+          return {
+            label: () =>
+              h(
+                RouterLink,
+                {
+                  to: {
+                    name: c.name,
+                  },
+                },
+                { default: () => c.name }
+              ),
+            key: c.name,
+            icon: renderIcon(c.icon),
+          };
+        });
+    }
+
     watchEffect(() => {
       if (isDarkTheme()) {
         console.log("dark");
@@ -137,6 +201,9 @@ export default defineComponent({
       } else {
         bgStyle.value =
           "height: 100%; padding: 15px; background-color: #F6F5F5;";
+      }
+      if (headActiveKey.value) {
+        selectedMenu(headActiveKey.value);
       }
     });
 
@@ -168,6 +235,8 @@ export default defineComponent({
       clickTheme,
       screenFull,
       bgStyle,
+      headActiveKey,
+      headMenuOptions,
     };
   },
   methods: {
