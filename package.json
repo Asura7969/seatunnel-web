@@ -9,12 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-sql": "^6.6.2",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "axios": "^1.6.7",
+    "codemirror": "^5.65.16",
+    "codemirror-editor-vue3": "^2.4.1",
     "echarts": "^5.5.0",
     "highlight.js": "^11.9.0",
     "pinia": "^2.1.7",
+    "sql-formatter": "^15.3.0",
     "vite-svg-loader": "^5.1.0",
     "vue": "^3.3.11",
+    "vue-codemirror": "^6.1.1",
     "vue-echarts": "^6.6.9",
     "vue-router": "^4.2.5"
   },

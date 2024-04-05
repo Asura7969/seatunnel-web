@@ -85,11 +85,12 @@
 import { FullscreenOutlined } from "@vicons/antd";
 import { WeatherMoon20Filled } from "@vicons/fluent";
 import { Sun } from "@vicons/tabler";
-import { darkTheme } from "naive-ui";
+import { darkTheme, lightTheme } from "naive-ui";
 import screenfull from "screenfull";
 import { defineComponent, h, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { routes } from "./router";
+import { useThemeStore } from "./store/theme";
 
 function renderIcon(icon) {
   return () => h(NIcon, null, { default: () => h(icon) });
@@ -136,19 +137,16 @@ export default defineComponent({
   },
   setup() {
     const containerRef = ref(void 0);
-    const theme = ref(null);
     const expandedKeys = [];
     const headActiveKey = ref("integration");
-
-    const isDarkTheme = () => {
-      return theme.value !== null && theme.value.name === "dark";
-    };
+    const themeStore = useThemeStore();
+    const theme = ref(lightTheme);
 
     // height: 100%; padding: 24px; background-color: #F6F5F5;
     const bgStyle = ref(null);
 
     const themeIcon = () => {
-      let v_node = isDarkTheme() ? Sun : WeatherMoon20Filled;
+      let v_node = themeStore.isDarkTheme ? Sun : WeatherMoon20Filled;
       return h(NIcon, null, {
         default: () => h(v_node),
       });
@@ -195,12 +193,13 @@ export default defineComponent({
     }
 
     watchEffect(() => {
-      if (isDarkTheme()) {
-        console.log("dark");
+      if (themeStore.isDarkTheme) {
         bgStyle.value = "height: 100%; padding: 15px;";
+        theme.value = darkTheme;
       } else {
         bgStyle.value =
           "height: 100%; padding: 15px; background-color: #F6F5F5;";
+        theme.value = lightTheme;
       }
       if (headActiveKey.value) {
         selectedMenu(headActiveKey.value);
@@ -212,10 +211,10 @@ export default defineComponent({
     });
 
     const clickTheme = () => {
-      if (isDarkTheme()) {
-        theme.value = null;
+      if (themeStore.isDarkTheme) {
+        themeStore.update("light");
       } else {
-        theme.value = darkTheme;
+        themeStore.update("dark");
       }
     };
 

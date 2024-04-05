@@ -9,6 +9,7 @@ import "./mock/index";
 // import "echarts";
 import {createPinia} from 'pinia'
 import "uno.css";
+import { InstallCodemirro } from "codemirror-editor-vue3";
 
 const pinia = createPinia()
-createApp(App).use(router).use(pinia).mount("#app");
+createApp(App).use(router).use(pinia).use(InstallCodemirro).mount("#app");
