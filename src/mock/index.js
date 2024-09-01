@@ -4,6 +4,40 @@ Mock.setup({
   timeout: "500-1000",
 });
 
+Mock.mock("/file/tree/", "get", () => {
+  return {
+    code: 200,
+    data: [{
+      key: "1",
+      label: "工作空间",
+      p: "-1",
+      type: "d",
+      children: [
+        {
+          key: "2",
+          label: "空的",
+          type: "d",
+          p: "1",
+        },
+        {
+          key: "3",
+          label: "我的文件",
+          type: "d",
+          p: "1",
+          children: [
+            {
+              label: "template.txt",
+              key: "4",
+              type: "f",
+              p: "3",
+            },
+          ],
+        },
+      ]
+    }],
+  };
+});
+
 Mock.mock("/sys/systemMonitoringInformation/", "get", () => {
   return {
     code: 200,

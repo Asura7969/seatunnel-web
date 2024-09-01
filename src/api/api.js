@@ -67,3 +67,9 @@ export const stopTask = function (id) {
 export const getSysInfo = function () {
   return req("get", "/sys/systemMonitoringInformation/");
 };
+
+
+// 查询文件树
+export const getFileTree = function () {
+  return req("get", "/file/tree/");
+};
