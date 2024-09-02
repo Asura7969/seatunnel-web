@@ -70,9 +70,12 @@ Graph.registerEdge(
     inherit: "edge",
     attrs: {
       line: {
-        stroke: "#C2C8D5",
-        strokeWidth: 1,
-        targetMarker: null,
+        stroke: '#9ca3af',
+        strokeDasharray: 3,
+        targetMarker: 'classic',
+        style: {
+          animation: 'running-line 30s infinite linear',
+        },
       },
     },
   },
@@ -403,14 +406,24 @@ onMounted(() => {
       const node = graph.getCellById(id);
       // const data = node.getData() as NodeStatus
       const data = node.getData();
+      // const edges = graph.getIncomingEdges(node);
+      // edges?.forEach((edge) => {
+      //   if (status === "running") {
+      //     edge.attr("line/strokeDasharray", 5);
+      //     edge.attr("line/style/animation", "running-line 30s infinite linear");
+      //   } else {
+      //     edge.attr("line/strokeDasharray", "");
+      //     edge.attr("line/style/animation", "");
+      //   }
+      // });
       node.setData({
         ...data,
         status: status,
       });
     });
-    // setTimeout(() => {
-    //   showNodeStatus(statusList);
-    // }, 3000);
+    setTimeout(() => {
+      showNodeStatus(statusList);
+    }, 3000);
   };
 
   init(data);

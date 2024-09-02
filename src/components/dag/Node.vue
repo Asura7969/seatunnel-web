@@ -3,9 +3,21 @@
     <img :src="image.logo" />
     <span class="label">{{ data.label }}</span>
     <span class="status">
-      <img v-if="data.status === 'success'" :src="image.success" />
-      <img v-if="data.status === 'failed'" :src="image.failed" />
-      <img v-if="data.status === 'running'" :src="image.running" />
+      <img
+        v-if="data.status === 'success'"
+        :src="image.success"
+        @click="click(data)"
+      />
+      <img
+        v-if="data.status === 'failed'"
+        :src="image.failed"
+        @click="click(data)"
+      />
+      <img
+        v-if="data.status === 'running'"
+        :src="image.running"
+        @click="click(data)"
+      />
     </span>
   </div>
 </template>
@@ -31,6 +43,10 @@ const data = computed(() => {
   return node ? node.getData() : {};
 });
 
+function click(node) {
+  console.log(node);
+}
+
 // 图片资源，需要根据实际情况替换为正确的路径
 const image = {
   logo: "https://gw.alipayobjects.com/mdn/rms_43231b/afts/img/A*evDjT5vjkX0AAAAAAAAAAAAAARQnAQ",
@@ -43,7 +59,7 @@ const image = {
 };
 </script>
 
-<style scoped>
+<style>
 .node {
   display: flex;
   align-items: center;
