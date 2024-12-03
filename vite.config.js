@@ -20,6 +20,11 @@ export default defineConfig({
       '@antv/x6-vue-shape': '@antv/x6-vue-shape/lib',
     },
   },
+  optimizeDeps: {
+    include: [
+      'monaco-editor', 'monaco-sql-languages',
+    ], 
+  },
   plugins: [
     vue({
       template: {
